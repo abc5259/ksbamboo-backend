@@ -28,11 +28,11 @@ export class BoardsController {
     return this.boardsService.getBoardById(id);
   }
 
-  // @Post()
-  // @UsePipes(ValidationPipe)
-  // createBoard(@Body() createBoardDto: CreateBoardDto): Board {
-  //   return this.boardsService.createBoard(createBoardDto);
-  // }
+  @Post()
+  @UsePipes(ValidationPipe)
+  createBoard(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
+    return this.boardsService.createBoard(createBoardDto);
+  }
 
   // @Delete('/:id')
   // deleteBoard(@Param('id') id: string): void {
