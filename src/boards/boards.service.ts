@@ -32,4 +32,14 @@ export class BoardsService {
     }
     return Object.assign({ ok: true });
   }
+
+  async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
+    const board = await this.getBoardById(id);
+    if (!board) {
+      throw new NotFoundException('해당 게시물을 찾을 수 없습니다.');
+    }
+    board.status = status;
+    await this.boardRepository.save(board);
+    return board;
+  }
 }
