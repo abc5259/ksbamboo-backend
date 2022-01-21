@@ -50,8 +50,11 @@ export class BoardsController {
   }
 
   @Delete('/:id')
-  deleteBoard(@Param('id', ParseIntPipe) id: number): Promise<Board> {
-    return this.boardsService.deleteBoard(id);
+  deleteBoard(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<{ ok: boolean }> {
+    return this.boardsService.deleteBoard(id, user);
   }
 
   @Patch('/:id/status')

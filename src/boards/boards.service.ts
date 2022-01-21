@@ -36,12 +36,12 @@ export class BoardsService {
     return this.boardRepository.createBoard(createBoardDto, user);
   }
 
-  async deleteBoard(id: number) {
-    const result = await this.boardRepository.delete(id);
+  async deleteBoard(id: number, user: User): Promise<{ ok: boolean }> {
+    const result = await this.boardRepository.delete({ id, user });
     if (result.affected === 0) {
       throw new NotFoundException('해당 게시물을 찾을 수 없습니다.');
     }
-    return Object.assign({ ok: true });
+    return { ok: true };
   }
 
   async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
