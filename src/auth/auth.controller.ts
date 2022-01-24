@@ -2,7 +2,10 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  ParseIntPipe,
   Post,
+  Query,
   Req,
   UseGuards,
   ValidationPipe,
@@ -37,8 +40,13 @@ export class AuthController {
     console.log('user', user);
   }
 
-  @Post('/email')
-  async sendMail(@Body('email') email: string) {
-    return this.authService.sendMail(email);
+  @Get('/email/:code')
+  async sendMail(@Param('code') code: string) {
+    return this.authService.sendMail(code);
+  }
+
+  @Get('/test')
+  async emailAuth(@Query() emailAuthDto: { email: string; code: string }) {
+    return this.authService.emailAuth(emailAuthDto);
   }
 }

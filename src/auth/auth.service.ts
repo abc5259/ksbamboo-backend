@@ -50,18 +50,37 @@ export class AuthService {
     return { accessToken };
   }
 
-  async sendMail(email: string) {
+  async sendMail(code: string) {
     try {
-      const number = Math.floor(Math.random() * 888888 + 111111);
+      const verification = await this.verification.findOne(
+        { code },
+        { relations: ['user'] },
+      );
       await this.mailerService.sendMail({
-        to: email, // list of receivers
+        to: verification.user.email, // list of receivers
         from: `${this.configService.get<string>('EMAIL_ID')}@naver.com`, // sender address
         subject: '이메일 인증 요청 메일입니다.', // Subject line
-        html: '6자리 인증 코드 : ' + `<b>${number}</b>`, // HTML body content
+        html: `<a href="http://localhost:3050/auth/test/?email=${verification.user.email}&code=${code}">인증하기</a>`, // HTML body content
       });
-      return 123456;
+      return verification;
     } catch (err) {
       console.log(err);
+    }
+  }
+
+  async emailAuth({ email, code }: { email: string; code: string }) {
+    try {
+      const verification = await this.verification.findOne(
+        { code },
+        { relations: ['user'] },
+      );
+      if (verification) {
+        verification.user.verified = true;
+        this.userRepository.save(verification.user);
+      }
+      return { ok: true };
+    } catch (error) {
+      console.log(error);
     }
   }
 }
