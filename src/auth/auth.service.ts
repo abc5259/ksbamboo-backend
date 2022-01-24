@@ -7,19 +7,29 @@ import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { Verification } from './entities/verification.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
-    private jwtService: JwtService,
+    private readonly userRepository: UserRepository,
+    @InjectRepository(Verification)
+    private readonly verification: Repository<Verification>,
+    private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
-    private configService: ConfigService,
+    private readonly configService: ConfigService,
   ) {}
 
   async signUp(authCredentialDto: AuthCredentialDto): Promise<User> {
-    return this.userRepository.createUser(authCredentialDto);
+    const user = await this.userRepository.createUser(authCredentialDto);
+    await this.verification.save(
+      this.verification.create({
+        user,
+      }),
+    );
+    return user;
   }
 
   async login({

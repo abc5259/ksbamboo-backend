@@ -17,17 +17,19 @@ export class UserRepository extends Repository<User> {
     try {
       const salt = await bcrypt.genSalt();
       const hashedPassword = await bcrypt.hash(password, salt);
-      const user = this.create({
-        username,
-        email,
-        password: hashedPassword,
-      });
-      await this.save(user);
+      const user = await this.save(
+        this.create({
+          username,
+          email,
+          password: hashedPassword,
+        }),
+      );
       return user;
     } catch (error) {
       if (error.code === '23505') {
         throw new ConflictException('이미 존재하는 email입니다.');
       } else {
+        console.log(error);
         throw new InternalServerErrorException();
       }
     }
