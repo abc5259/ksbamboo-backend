@@ -1,4 +1,4 @@
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/auth/entities/user.entity';
 import { EntityRepository, Repository } from 'typeorm';
 import { BoardStatus } from './board-status.enum.';
 import { Board } from './board.entity';
