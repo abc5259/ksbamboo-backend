@@ -23,10 +23,10 @@ export class AuthService {
   }
 
   async login({
-    username,
+    email,
     password,
   }: AuthCredentialDto): Promise<{ accessToken: string }> {
-    const user = await this.userRepository.findOne({ username });
+    const user = await this.userRepository.findOne({ email });
     if (!user) {
       throw new UnauthorizedException('존재하지 않는 사용자입니다.');
     }
@@ -35,7 +35,7 @@ export class AuthService {
       throw new UnauthorizedException('비밀번호가 틀립니다.');
     }
     //유저 토큰 생성 (Secret + playload)
-    const payload = { username };
+    const payload = { email };
     const accessToken = await this.jwtService.sign(payload);
     return { accessToken };
   }
