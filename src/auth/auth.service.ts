@@ -5,6 +5,8 @@ import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
+import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +14,8 @@ export class AuthService {
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
     private jwtService: JwtService,
+    private readonly mailerService: MailerService,
+    private configService: ConfigService,
   ) {}
 
   async signUp(authCredentialDto: AuthCredentialDto): Promise<User> {
@@ -34,5 +38,20 @@ export class AuthService {
     const payload = { username };
     const accessToken = await this.jwtService.sign(payload);
     return { accessToken };
+  }
+
+  async sendMail(email: string) {
+    try {
+      const number = Math.floor(Math.random() * 888888 + 111111);
+      await this.mailerService.sendMail({
+        to: email, // list of receivers
+        from: `${this.configService.get<string>('EMAIL_ID')}@naver.com`, // sender address
+        subject: '이메일 인증 요청 메일입니다.', // Subject line
+        html: '6자리 인증 코드 : ' + `<b>${number}</b>`, // HTML body content
+      });
+      return 123456;
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
