@@ -1,9 +1,17 @@
 import { User } from 'src/auth/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Comment } from 'src/comments/entities/comment.entity';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { BoardStatus } from './board-status.enum.';
 
 @Entity()
-export class Board {
+export class Board extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -18,4 +26,7 @@ export class Board {
 
   @ManyToOne((type) => User, (user) => user.boards, { eager: false })
   user: User;
+
+  @OneToMany((type) => Comment, (comment) => comment.board)
+  comments: Comment[];
 }

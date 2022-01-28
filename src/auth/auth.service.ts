@@ -56,6 +56,7 @@ export class AuthService {
         { code },
         { relations: ['user'] },
       );
+      //code 암호화 하기
       await this.mailerService.sendMail({
         to: verification.user.email, // list of receivers
         from: `${this.configService.get<string>('EMAIL_ID')}@naver.com`, // sender address
@@ -78,6 +79,7 @@ export class AuthService {
         verification.user.verified = true;
         this.userRepository.save(verification.user);
       }
+      // 프론트 서버 페이지로 redirect
       return { ok: true };
     } catch (error) {
       console.log(error);

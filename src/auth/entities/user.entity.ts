@@ -1,4 +1,5 @@
 import { Board } from 'src/boards/board.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
 import {
   BaseEntity,
   Column,
@@ -28,4 +29,9 @@ export class User extends BaseEntity {
 
   @OneToMany((type) => Board, (board) => board.user, { eager: true })
   boards: Board[];
+
+  @OneToMany((type) => Comment, (comment) => comment.user)
+  comments: Comment[];
+
+  //Like
 }
