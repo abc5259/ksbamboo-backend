@@ -1,5 +1,6 @@
 import { User } from 'src/auth/entities/user.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { Image } from 'src/image/entity/image.entity';
 import {
   BaseEntity,
   Column,
@@ -8,7 +9,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { BoardStatus } from './board-status.enum.';
+import { BoardStatus } from '../board-status.enum.';
 
 @Entity()
 export class Board extends BaseEntity {
@@ -29,4 +30,7 @@ export class Board extends BaseEntity {
 
   @OneToMany((type) => Comment, (comment) => comment.board)
   comments: Comment[];
+
+  @OneToMany((type) => Image, (image) => image.board)
+  images: Image[];
 }

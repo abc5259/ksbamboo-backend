@@ -9,18 +9,13 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Comment extends BaseEntity {
+export class Image extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  content: string;
+  src: string;
 
-  //User에 속해있음 일대다
-  @ManyToOne((type) => User, (user) => user.comments)
-  user: User;
-
-  //Post에 속해있음 일대다
-  @ManyToOne((type) => Board, (board) => board.comments)
+  @ManyToOne((type) => Board, (board) => board.images)
   board: Board;
 }

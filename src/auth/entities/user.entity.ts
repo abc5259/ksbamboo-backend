@@ -1,4 +1,4 @@
-import { Board } from 'src/boards/board.entity';
+import { Board } from 'src/boards/entities/board.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import {
   BaseEntity,
@@ -24,6 +24,9 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
+  @Column()
+  avatar: string;
+
   @Column({ default: false })
   verified: boolean;
 
@@ -32,6 +35,4 @@ export class User extends BaseEntity {
 
   @OneToMany((type) => Comment, (comment) => comment.user)
   comments: Comment[];
-
-  //Like
 }

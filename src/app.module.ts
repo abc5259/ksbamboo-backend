@@ -2,10 +2,15 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BoardsModule } from './boards/boards.module';
-import { typeORMConfig } from './configs/typeorm.config';
 import { AuthModule } from './auth/auth.module';
 import * as Joi from 'joi';
 import { CommentsModule } from './comments/comments.module';
+import { ImageModule } from './image/image.module';
+import { User } from './auth/entities/user.entity';
+import { Board } from './boards/entities/board.entity';
+import { Comment } from './comments/entities/comment.entity';
+import { Image } from './image/entity/image.entity';
+import { Verification } from './auth/entities/verification.entity';
 
 @Module({
   imports: [
@@ -23,10 +28,20 @@ import { CommentsModule } from './comments/comments.module';
         JWT_SECRET: Joi.string().required(),
       }),
     }),
-    TypeOrmModule.forRoot(typeORMConfig),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT, //postgres기본 포트가 5432이다.
+      username: process.env.DB_USERNAME, //postgres유저명을 적어준다.
+      password: process.env.DB_PASSWORD, //만든 데이터베이스의 비번을 적어준다
+      database: process.env.DB_NAME, //만든 데이터베이스 이름을 적어준다.
+      synchronize: true, //데이터베이스를 너의 모듈의 현재 상태로 마이크래이션한다는 뜻
+      entities: [User, Board, Comment, Image, Verification],
+    }),
     BoardsModule,
     AuthModule,
     CommentsModule,
+    ImageModule,
   ],
 })
 export class AppModule {}
