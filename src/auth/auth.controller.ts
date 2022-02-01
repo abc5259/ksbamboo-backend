@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  Redirect,
   Req,
   UseGuards,
   ValidationPipe,
@@ -20,7 +21,7 @@ import { User } from './entities/user.entity';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('/signup')
+  @Post('/join')
   signUp(
     @Body(ValidationPipe) authCredentialDto: AuthCredentialDto,
   ): Promise<User> {
@@ -34,10 +35,10 @@ export class AuthController {
     return this.authService.login(authCredentialDto);
   }
 
-  @Post('/test')
+  @Get('/user')
   @UseGuards(AuthGuard())
-  test(@GetUser() user: User) {
-    console.log('user', user);
+  getUser(@GetUser() user: User) {
+    return { user };
   }
 
   // @Get('/email/:code')
@@ -46,7 +47,15 @@ export class AuthController {
   // }
 
   @Get('/email')
-  async emailAuth(@Query() emailAuthDto: { code: string }) {
-    return this.authService.emailAuth(emailAuthDto);
+  @Redirect('http://localhost:3000', 302)
+  async emailAuth(
+    @Query() emailAuthDto: { code: string },
+  ): Promise<{ url: string }> {
+    const { ok, message } = await this.authService.emailAuth(emailAuthDto);
+    if (ok) {
+      return { url: `http://localhost:3000/login?message=${message}` };
+    } else {
+      return { url: `http://localhost:3000/join?message=${message}` };
+    }
   }
 }

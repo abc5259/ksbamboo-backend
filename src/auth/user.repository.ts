@@ -13,6 +13,7 @@ export class UserRepository extends Repository<User> {
     username,
     password,
     email,
+    enterYear,
   }: AuthCredentialDto): Promise<User> {
     try {
       const salt = await bcrypt.genSalt();
@@ -22,6 +23,7 @@ export class UserRepository extends Repository<User> {
           username,
           email,
           password: hashedPassword,
+          enterYear,
         }),
       );
       return user;

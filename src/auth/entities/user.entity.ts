@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
+import { KsDepartment } from '../user-ksDepartment.type';
 
 @Entity()
 @Unique(['email'])
@@ -24,11 +25,11 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @Column()
-  avatar: string;
+  @Column({ nullable: true })
+  ksDepartment?: KsDepartment;
 
   @Column()
-  ksDe : string;
+  enterYear: string;
 
   @Column({ default: false })
   verified: boolean;

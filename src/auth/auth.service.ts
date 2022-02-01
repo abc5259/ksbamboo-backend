@@ -37,7 +37,7 @@ export class AuthService {
   async login({
     email,
     password,
-  }: AuthCredentialDto): Promise<{ accessToken: string }> {
+  }: AuthCredentialDto): Promise<{ accessToken: string; user: User }> {
     const user = await this.userRepository.findOne({ email });
     if (!user) {
       throw new UnauthorizedException('존재하지 않는 사용자입니다.');
@@ -49,7 +49,7 @@ export class AuthService {
     //유저 토큰 생성 (Secret + playload)
     const payload = { email };
     const accessToken = await this.jwtService.sign(payload);
-    return { accessToken };
+    return { accessToken, user };
   }
 
   async sendMail(email: string, code: string) {
@@ -71,7 +71,11 @@ export class AuthService {
     }
   }
 
-  async emailAuth({ code }: { code: string }) {
+  async emailAuth({
+    code,
+  }: {
+    code: string;
+  }): Promise<{ ok: boolean; message: string }> {
     try {
       const verification = await this.verification.findOne(
         { code },
@@ -82,9 +86,16 @@ export class AuthService {
         this.userRepository.save(verification.user);
       }
       // 프론트 서버 페이지로 redirect
-      return { url: 'http://localhost:3000/login' };
+      return {
+        ok: true,
+        message: '이메일 인증이 완료되었습니다! 로그인 하여 시작해주새요',
+      };
     } catch (error) {
       console.log(error);
+      return {
+        ok: false,
+        message: '이메일 인증이 실패하였습니다. 다시 시도해주세요',
+      };
     }
   }
 }

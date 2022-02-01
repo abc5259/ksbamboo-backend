@@ -9,7 +9,6 @@ import {
 export class AuthCredentialDto {
   @IsNotEmpty()
   @IsString()
-  @MinLength(4)
   @MaxLength(20)
   username: string;
 
@@ -26,4 +25,8 @@ export class AuthCredentialDto {
     message: '비밀번호는 오직 영어와 숫자의 조합으로 되어야 합니다.',
   })
   password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  enterYear: string;
 }
