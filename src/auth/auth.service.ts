@@ -24,11 +24,13 @@ export class AuthService {
 
   async signUp(authCredentialDto: AuthCredentialDto): Promise<User> {
     const user = await this.userRepository.createUser(authCredentialDto);
-    await this.verification.save(
+    const verification = await this.verification.save(
       this.verification.create({
         user,
       }),
     );
+    //sendEmail
+    this.sendMail(user.email, verification.code);
     return user;
   }
 
@@ -50,26 +52,26 @@ export class AuthService {
     return { accessToken };
   }
 
-  async sendMail(code: string) {
+  async sendMail(email: string, code: string) {
     try {
-      const verification = await this.verification.findOne(
-        { code },
-        { relations: ['user'] },
-      );
-      //code 암호화 하기
+      // const verification = await this.verification.findOne(
+      //   { code },
+      //   { relations: ['user'] },
+      // );
       await this.mailerService.sendMail({
-        to: verification.user.email, // list of receivers
+        to: email, // list of receivers
         from: `${this.configService.get<string>('EMAIL_ID')}@naver.com`, // sender address
         subject: '이메일 인증 요청 메일입니다.', // Subject line
-        html: `<a href="http://localhost:3050/auth/test/?email=${verification.user.email}&code=${code}">인증하기</a>`, // HTML body content
+        html: `<a href="http://localhost:3050/auth/email/?code=${code}">인증하기</a>`, // HTML body content
       });
-      return verification;
+      //front로 redirect시켜주기
+      return { ok: true };
     } catch (err) {
       console.log(err);
     }
   }
 
-  async emailAuth({ email, code }: { email: string; code: string }) {
+  async emailAuth({ code }: { code: string }) {
     try {
       const verification = await this.verification.findOne(
         { code },
@@ -80,7 +82,7 @@ export class AuthService {
         this.userRepository.save(verification.user);
       }
       // 프론트 서버 페이지로 redirect
-      return { ok: true };
+      return { url: 'http://localhost:3000/login' };
     } catch (error) {
       console.log(error);
     }

@@ -40,13 +40,13 @@ export class AuthController {
     console.log('user', user);
   }
 
-  @Get('/email/:code')
-  async sendMail(@Param('code') code: string) {
-    return this.authService.sendMail(code);
-  }
+  // @Get('/email/:code')
+  // async sendMail(@Param('code') code: string) {
+  //   return this.authService.sendMail(code);
+  // }
 
-  @Get('/test')
-  async emailAuth(@Query() emailAuthDto: { email: string; code: string }) {
+  @Get('/email')
+  async emailAuth(@Query() emailAuthDto: { code: string }) {
     return this.authService.emailAuth(emailAuthDto);
   }
 }

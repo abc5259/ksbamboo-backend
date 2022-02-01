@@ -27,6 +27,9 @@ export class User extends BaseEntity {
   @Column()
   avatar: string;
 
+  @Column()
+  ksDe : string;
+
   @Column({ default: false })
   verified: boolean;
 
