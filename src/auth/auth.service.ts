@@ -88,7 +88,7 @@ export class AuthService {
       // 프론트 서버 페이지로 redirect
       return {
         ok: true,
-        message: '이메일 인증이 완료되었습니다! 로그인 하여 시작해주새요',
+        message: '이메일 인증이 완료되었습니다! 로그인 하여 시작해주세요',
       };
     } catch (error) {
       console.log(error);

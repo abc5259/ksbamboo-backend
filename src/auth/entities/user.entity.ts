@@ -25,8 +25,8 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @Column({ nullable: true })
-  ksDepartment?: KsDepartment;
+  @Column()
+  ksDepartment: KsDepartment;
 
   @Column()
   enterYear: string;

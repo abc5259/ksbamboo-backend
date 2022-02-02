@@ -5,6 +5,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { KsDepartment } from '../user-ksDepartment.type';
 
 export class AuthCredentialDto {
   @IsNotEmpty()
@@ -14,19 +15,27 @@ export class AuthCredentialDto {
 
   @IsNotEmpty()
   @IsString()
+  @MaxLength(100)
   @Matches(/@ks.ac.kr$/g)
   email: string;
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(4)
+  @MinLength(8)
   @MaxLength(20)
-  @Matches(/^[a-zA-Z0-9]*$/, {
-    message: '비밀번호는 오직 영어와 숫자의 조합으로 되어야 합니다.',
-  })
+  @Matches(
+    /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,20}$/,
+    {
+      message: '숫자와 영문자, 특수문자 조합으로 8~20자리를 사용해야 합니다.',
+    },
+  )
   password: string;
 
   @IsNotEmpty()
   @IsString()
   enterYear: string;
+
+  @IsNotEmpty()
+  @IsString()
+  ksDepartment: KsDepartment;
 }
