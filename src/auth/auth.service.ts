@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthCredentialDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
@@ -22,16 +26,21 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async signUp(authCredentialDto: AuthCredentialDto): Promise<User> {
+  async signUp(authCredentialDto: AuthCredentialDto): Promise<{ ok: boolean }> {
     const user = await this.userRepository.createUser(authCredentialDto);
-    const verification = await this.verification.save(
-      this.verification.create({
-        user,
-      }),
-    );
-    //sendEmail
-    this.sendMail(user.email, verification.code);
-    return user;
+    try {
+      const verification = await this.verification.save(
+        this.verification.create({
+          user,
+        }),
+      );
+      //sendEmail
+      this.sendMail(user.email, verification.code);
+      return { ok: true };
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 
   async login({
@@ -85,7 +94,7 @@ export class AuthService {
         verification.user.verified = true;
         this.userRepository.save(verification.user);
       }
-      // 프론트 서버 페이지로 redirect
+      // 이메일 인증코드 삭제 및 인증 코드 유효기간 부여하기
       return {
         ok: true,
         message: '이메일 인증이 완료되었습니다! 로그인 하여 시작해주세요',

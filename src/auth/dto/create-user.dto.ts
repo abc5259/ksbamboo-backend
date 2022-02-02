@@ -16,7 +16,9 @@ export class AuthCredentialDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(100)
-  @Matches(/@ks.ac.kr$/g)
+  @Matches(/@ks.ac.kr$/, {
+    message: '경성대학교 이메일이어야 합니다.',
+  })
   email: string;
 
   @IsNotEmpty()

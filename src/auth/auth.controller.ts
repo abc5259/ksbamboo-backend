@@ -24,7 +24,7 @@ export class AuthController {
   @Post('/join')
   signUp(
     @Body(ValidationPipe) authCredentialDto: AuthCredentialDto,
-  ): Promise<User> {
+  ): Promise<{ ok: boolean }> {
     return this.authService.signUp(authCredentialDto);
   }
 
