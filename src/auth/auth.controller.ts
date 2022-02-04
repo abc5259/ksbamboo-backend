@@ -16,6 +16,7 @@ import { AuthService } from './auth.service';
 import { AuthCredentialDto } from './dto/create-user.dto';
 import { GetUser } from './get-user.decorator';
 import { User } from './entities/user.entity';
+import { LoginInputDto } from './dto/login-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -30,9 +31,9 @@ export class AuthController {
 
   @Post('/login')
   login(
-    @Body(ValidationPipe) authCredentialDto: AuthCredentialDto,
+    @Body(ValidationPipe) loginInputDto: LoginInputDto,
   ): Promise<{ accessToken: string }> {
-    return this.authService.login(authCredentialDto);
+    return this.authService.login(loginInputDto);
   }
 
   @Get('/user')

@@ -13,6 +13,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { Verification } from './entities/verification.entity';
 import { Repository } from 'typeorm';
+import { LoginInputDto } from './dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -46,7 +47,7 @@ export class AuthService {
   async login({
     email,
     password,
-  }: AuthCredentialDto): Promise<{ accessToken: string; user: User }> {
+  }: LoginInputDto): Promise<{ accessToken: string; user: User }> {
     const user = await this.userRepository.findOne({ email });
     if (!user) {
       throw new UnauthorizedException('존재하지 않는 사용자입니다.');
