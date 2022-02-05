@@ -14,7 +14,7 @@ export class BoardsService {
   ) {}
 
   async getAllBoards(): Promise<Board[]> {
-    return await this.boardRepository.find();
+    return await this.boardRepository.find({ relations: ['user'] });
   }
 
   async getMeBoards(user: User): Promise<Board[]> {

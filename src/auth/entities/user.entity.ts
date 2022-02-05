@@ -3,10 +3,12 @@ import { Comment } from 'src/comments/entities/comment.entity';
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
+  UpdateDateColumn,
 } from 'typeorm';
 import { KsDepartment } from '../user-ksDepartment.type';
 
@@ -33,6 +35,12 @@ export class User extends BaseEntity {
 
   @Column({ default: false })
   verified: boolean;
+
+  @CreateDateColumn() // entity를 만들었을때 자동으로 설정해 주는 special column
+  createdAt: Date;
+
+  @UpdateDateColumn() // entity를 update시 자동으로 설정해 주는 special column
+  updatedAt: Date;
 
   @OneToMany((type) => Board, (board) => board.user, { eager: true })
   boards: Board[];

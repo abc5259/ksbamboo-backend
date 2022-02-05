@@ -56,6 +56,10 @@ export class AuthService {
     if (!match) {
       throw new UnauthorizedException('비밀번호가 틀립니다.');
     }
+    //이메일 인증되지 않은 사용자 에러처리
+    if (!user.verified) {
+      throw new UnauthorizedException('이메일 인증을 해야합니다.');
+    }
     //유저 토큰 생성 (Secret + playload)
     const payload = { email };
     const accessToken = await this.jwtService.sign(payload);
