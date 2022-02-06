@@ -20,12 +20,17 @@ import { Verification } from './auth/entities/verification.entity';
       ignoreEnvFile: process.env.NODE_ENV === 'prod', //서버에 deply 할 때 환경변수 파일을 사용하지 않는다는 것
       validationSchema: Joi.object({
         NODE_ENV: Joi.string().valid('dev', 'prod').required(),
+        // DB
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.string().required(),
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
+        // JWT
         JWT_SECRET: Joi.string().required(),
+        JWT_ACCESS_TOKEN_EXPIRATION_TIME: Joi.string().required(),
+        JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
+        JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot({

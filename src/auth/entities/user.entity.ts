@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { KsDepartment } from '../user-ksDepartment.type';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 @Unique(['email'])
@@ -25,6 +26,7 @@ export class User extends BaseEntity {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column()
@@ -35,6 +37,10 @@ export class User extends BaseEntity {
 
   @Column({ default: false })
   verified: boolean;
+
+  @Column({ nullable: true })
+  @Exclude()
+  currentHashedRefreshToken?: string;
 
   @CreateDateColumn() // entity를 만들었을때 자동으로 설정해 주는 special column
   createdAt: Date;

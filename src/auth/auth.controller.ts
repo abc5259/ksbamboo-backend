@@ -32,7 +32,7 @@ export class AuthController {
   @Post('/login')
   login(
     @Body(ValidationPipe) loginInputDto: LoginInputDto,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{ accessToken: string; user: User }> {
     return this.authService.login(loginInputDto);
   }
 

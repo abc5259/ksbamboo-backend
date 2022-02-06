@@ -4,7 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserRepository } from './user.repository';
 import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
@@ -18,7 +18,11 @@ import { Verification } from './entities/verification.entity';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: 60 * 60 },
+        signOptions: {
+          expiresIn: `${config.get<string>(
+            'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+          )}s`,
+        }, //expiresIn: 10
       }),
     }),
     TypeOrmModule.forFeature([UserRepository, Verification]),

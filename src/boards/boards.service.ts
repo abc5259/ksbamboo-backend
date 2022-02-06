@@ -32,9 +32,6 @@ export class BoardsService {
       },
       relations: ['user'],
     });
-    // if (!boards) {
-    //   throw new NotFoundException(`해당 게시물을 찾을 수 없습니다.`);
-    // }
     return boards;
   }
 

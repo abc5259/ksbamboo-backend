@@ -61,17 +61,14 @@ export class AuthService {
       throw new UnauthorizedException('이메일 인증을 해야합니다.');
     }
     //유저 토큰 생성 (Secret + playload)
-    const payload = { email };
-    const accessToken = await this.jwtService.sign(payload);
+    // const payload = { email };
+    // const accessToken = await this.jwtService.sign(payload);
+    const { accessToken } = await this.getJwtAccessToken(email);
     return { accessToken, user };
   }
 
   async sendMail(email: string, code: string) {
     try {
-      // const verification = await this.verification.findOne(
-      //   { code },
-      //   { relations: ['user'] },
-      // );
       await this.mailerService.sendMail({
         to: email, // list of receivers
         from: `${this.configService.get<string>('EMAIL_ID')}@naver.com`, // sender address
@@ -80,8 +77,8 @@ export class AuthService {
       });
       //front로 redirect시켜주기
       return { ok: true };
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -112,4 +109,59 @@ export class AuthService {
       };
     }
   }
+
+  //accessToken 전달
+  async getJwtAccessToken(email: string) {
+    const payload = { email };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME', // 10초
+      )}s`,
+    });
+    return { accessToken: token };
+  }
+
+  //refreshToken 전달
+  async getJwtRefreshToken(email: string) {
+    const payload = { email };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME', // 일주일
+      )}s`,
+    });
+    return { refreshToken: token };
+  }
+
+  // RefreshToken 암호화 and 저장
+  async setCurrentRefreshToken(refreshToken: string, email: string) {
+    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.userRepository.update(email, { currentHashedRefreshToken });
+  }
+
+  // RefreshToken이 유효한지 확인
+  async getUserRefreshTokenMatches(refreshToken: string, email: string) {
+    const user = await this.userRepository.findOne({ email });
+    if (!user) {
+      throw new UnauthorizedException('존재하지 않는 사용자입니다.');
+    }
+    const isRefreshTokenMatch = await bcrypt.compare(
+      refreshToken,
+      user.currentHashedRefreshToken,
+    );
+    if (isRefreshTokenMatch) {
+      return user;
+    }
+  }
+
+  async removeRefreshToken(email: string) {
+    return this.userRepository.update(email, {
+      currentHashedRefreshToken: null,
+    });
+  }
+
+  // logout() {
+  //   return {}
+  // }
 }
