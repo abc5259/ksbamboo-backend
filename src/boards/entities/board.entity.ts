@@ -12,6 +12,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { BoardStatus } from '../board-status.enum.';
+import { BoardCategoryType } from '../types/board-category.type';
 
 @Entity()
 export class Board extends BaseEntity {
@@ -26,6 +27,9 @@ export class Board extends BaseEntity {
 
   @Column()
   status: BoardStatus;
+
+  @Column()
+  category: BoardCategoryType;
 
   @CreateDateColumn() // entity를 만들었을때 자동으로 설정해 주는 special column
   createdAt: Date;

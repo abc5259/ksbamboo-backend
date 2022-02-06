@@ -1,4 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
+import { BoardCategoryType } from '../types/board-category.type';
 
 export class CreateBoardDto {
   @IsNotEmpty()
@@ -6,4 +7,7 @@ export class CreateBoardDto {
 
   @IsNotEmpty()
   content: string;
+
+  @IsNotEmpty()
+  category: BoardCategoryType;
 }

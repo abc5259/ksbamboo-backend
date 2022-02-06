@@ -20,6 +20,7 @@ import { Board } from './entities/board.entity';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
+import { BoardCategoryType } from './types/board-category.type';
 
 @Controller('boards')
 @UseGuards(AuthGuard())
@@ -36,6 +37,13 @@ export class BoardsController {
   getMeBoards(@GetUser() user: User) {
     this.logger.verbose(`User: ${user.username} trying to get all Boards`);
     return this.boardsService.getMeBoards(user);
+  }
+
+  @Get('/category/:category')
+  getCategoryBoards(
+    @Param('category') category: BoardCategoryType,
+  ): Promise<Board[]> {
+    return this.boardsService.getCategoryBoards(category);
   }
 
   @Get('/:id')

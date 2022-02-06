@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BoardRepository } from './board.repository';
 import { Board } from './entities/board.entity';
 import { User } from 'src/auth/entities/user.entity';
+import { BoardCategoryType } from './types/board-category.type';
 
 @Injectable()
 export class BoardsService {
@@ -21,6 +22,14 @@ export class BoardsService {
     const query = this.boardRepository.createQueryBuilder('board');
     query.where('board.userId = :userId', { userId: user.id });
     const boards = await query.getMany();
+    return boards;
+  }
+
+  async getCategoryBoards(category: BoardCategoryType): Promise<Board[]> {
+    const boards = await this.boardRepository.find({ category });
+    if (!boards) {
+      throw new NotFoundException(`해당 게시물을 찾을 수 없습니다.`);
+    }
     return boards;
   }
 

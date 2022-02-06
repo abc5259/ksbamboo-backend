@@ -7,12 +7,13 @@ import { CreateBoardDto } from './dto/create-board.dto';
 @EntityRepository(Board)
 export class BoardRepository extends Repository<Board> {
   async createBoard(
-    { title, content }: CreateBoardDto,
+    { title, content, category }: CreateBoardDto,
     user: User,
   ): Promise<Board> {
     const board = this.create({
       title,
       content,
+      category,
       status: BoardStatus.PRIVATE,
       user,
     });
