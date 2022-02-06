@@ -44,10 +44,11 @@ export class AuthService {
     }
   }
 
-  async login({
-    email,
-    password,
-  }: LoginInputDto): Promise<{ accessToken: string; user: User }> {
+  async login({ email, password }: LoginInputDto): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    user: User;
+  }> {
     const user = await this.userRepository.findOne({ email });
     if (!user) {
       throw new UnauthorizedException('존재하지 않는 사용자입니다.');
@@ -64,7 +65,9 @@ export class AuthService {
     // const payload = { email };
     // const accessToken = await this.jwtService.sign(payload);
     const { accessToken } = await this.getJwtAccessToken(email);
-    return { accessToken, user };
+    const { refreshToken } = await this.getJwtRefreshToken(email);
+    await this.updateRefreshTokenInUser(refreshToken, email);
+    return { accessToken, refreshToken, user };
   }
 
   async sendMail(email: string, code: string) {
@@ -135,13 +138,23 @@ export class AuthService {
   }
 
   // RefreshToken 암호화 and 저장
-  async setCurrentRefreshToken(refreshToken: string, email: string) {
-    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
-    await this.userRepository.update(email, { currentHashedRefreshToken });
+  async updateRefreshTokenInUser(refreshToken: string, email: string) {
+    if (refreshToken) {
+      refreshToken = await bcrypt.hash(refreshToken, 10);
+    }
+    await this.userRepository.update(
+      { email },
+      {
+        currentHashedRefreshToken: refreshToken,
+      },
+    );
   }
 
   // RefreshToken이 유효한지 확인
-  async getUserRefreshTokenMatches(refreshToken: string, email: string) {
+  async getUserRefreshTokenMatches(
+    refreshToken: string,
+    email: string,
+  ): Promise<{ result: boolean }> {
     const user = await this.userRepository.findOne({ email });
     if (!user) {
       throw new UnauthorizedException('존재하지 않는 사용자입니다.');
@@ -151,17 +164,32 @@ export class AuthService {
       user.currentHashedRefreshToken,
     );
     if (isRefreshTokenMatch) {
-      return user;
+      // await this.updateRefreshTokenInUser(null, email);
+      return { result: true };
+    } else {
+      throw new UnauthorizedException();
     }
   }
 
   async removeRefreshToken(email: string) {
-    return this.userRepository.update(email, {
-      currentHashedRefreshToken: null,
-    });
+    return this.userRepository.update(
+      { email },
+      {
+        currentHashedRefreshToken: null,
+      },
+    );
   }
 
-  // logout() {
-  //   return {}
-  // }
+  async logOut(email: string) {
+    await this.removeRefreshToken(email);
+  }
+
+  async getNewAccessAndRefreshToken(email: string) {
+    const { refreshToken } = await this.getJwtRefreshToken(email);
+    await this.updateRefreshTokenInUser(refreshToken, email);
+    return {
+      accessToken: await this.getJwtAccessToken(email),
+      refreshToken,
+    };
+  }
 }
