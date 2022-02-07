@@ -23,7 +23,6 @@ import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe'
 import { BoardCategoryType } from './types/board-category.type';
 
 @Controller('boards')
-@UseGuards(AuthGuard())
 export class BoardsController {
   private logger = new Logger('BoardController');
   constructor(private boardsService: BoardsService) {}
@@ -34,6 +33,7 @@ export class BoardsController {
   }
 
   @Get('/me')
+  @UseGuards(AuthGuard())
   getMeBoards(@GetUser() user: User) {
     this.logger.verbose(`User: ${user.username} trying to get all Boards`);
     return this.boardsService.getMeBoards(user);
@@ -52,6 +52,7 @@ export class BoardsController {
   }
 
   @Post()
+  @UseGuards(AuthGuard())
   @UsePipes(ValidationPipe)
   createBoard(
     @Body() createBoardDto: CreateBoardDto,
@@ -66,6 +67,7 @@ export class BoardsController {
   }
 
   @Delete('/:id')
+  @UseGuards(AuthGuard())
   deleteBoard(
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
@@ -74,6 +76,7 @@ export class BoardsController {
   }
 
   @Patch('/:id/status')
+  @UseGuards(AuthGuard())
   updateBoardStatus(
     @Param('id', ParseIntPipe) id,
     @Body('status', BoardStatusValidationPipe) status: BoardStatus,

@@ -23,7 +23,10 @@ export class JwtRefreshStrategy extends PassportStrategy(
   }
 
   async validate({ email }) {
-    const user: User = await this.userRepository.findOne({ email });
+    const user: User = await this.userRepository.findOne(
+      { email },
+      { select: ['id', 'ksDepartment', 'verified', 'username', 'email'] },
+    );
     if (!user) {
       throw new UnauthorizedException();
     }

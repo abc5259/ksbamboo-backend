@@ -40,7 +40,7 @@ export class AuthController {
   @Get('/user')
   @UseGuards(AuthGuard())
   getUser(@GetUser() user: User) {
-    return { user };
+    return user;
   }
 
   @Post('/refresh')
