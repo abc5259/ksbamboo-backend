@@ -6,12 +6,16 @@ import { BoardRepository } from './board.repository';
 import { Board } from './entities/board.entity';
 import { User } from 'src/auth/entities/user.entity';
 import { BoardCategoryType } from './types/board-category.type';
+import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
+import { CommentRepository } from 'src/comments/comment.repository';
 
 @Injectable()
 export class BoardsService {
   constructor(
     @InjectRepository(BoardRepository)
     private boardRepository: BoardRepository,
+    @InjectRepository(CommentRepository)
+    private commentRepository: CommentRepository,
   ) {}
 
   async getAllBoards(): Promise<Board[]> {
@@ -36,7 +40,9 @@ export class BoardsService {
   }
 
   async getBoardById(id: number): Promise<Board> {
-    const board = await this.boardRepository.findOne(id, {});
+    const board = await this.boardRepository.findOne(id, {
+      relations: ['user', 'comments'],
+    });
     if (!board) {
       throw new NotFoundException(`해당 게시물을 찾을 수 없습니다.`);
     }
@@ -63,5 +69,18 @@ export class BoardsService {
     board.status = status;
     await this.boardRepository.save(board);
     return board;
+  }
+
+  //comment
+  async createBoardComment(
+    boardId: number,
+    createCommentDto: CreateCommentDto,
+    user: User,
+  ) {
+    const board = await this.boardRepository.findOne(boardId);
+    if (!board) {
+      throw new NotFoundException('해당 게시물을 찾을 수 없습니다.');
+    }
+    return this.commentRepository.createComment(board, createCommentDto, user);
   }
 }

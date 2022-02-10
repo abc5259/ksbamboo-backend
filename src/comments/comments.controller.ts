@@ -8,13 +8,4 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 @Controller('comments')
 export class CommentsController {
   constructor(private commentsService: CommentsService) {}
-
-  @Post()
-  @UseGuards(AuthGuard())
-  createComment(
-    @Body() createCommentDto: CreateCommentDto,
-    @GetUser() user: User,
-  ) {
-    return this.commentsService.createComment(createCommentDto, user);
-  }
 }

@@ -21,6 +21,7 @@ import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 import { BoardCategoryType } from './types/board-category.type';
+import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 
 @Controller('boards')
 export class BoardsController {
@@ -82,5 +83,20 @@ export class BoardsController {
     @Body('status', BoardStatusValidationPipe) status: BoardStatus,
   ): Promise<Board> {
     return this.boardsService.updateBoardStatus(id, status);
+  }
+
+  //comment
+  @Post('/:boardId/comment')
+  @UseGuards(AuthGuard())
+  createBoardComment(
+    @Param('boardId', ParseIntPipe) boardId,
+    @Body() createCommentDto: CreateCommentDto,
+    @GetUser() user: User,
+  ) {
+    return this.boardsService.createBoardComment(
+      boardId,
+      createCommentDto,
+      user,
+    );
   }
 }
