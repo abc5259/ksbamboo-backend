@@ -30,15 +30,13 @@ export class BoardsService {
       where: {
         category,
       },
-      relations: ['user'],
+      relations: ['user', 'comments'],
     });
     return boards;
   }
 
   async getBoardById(id: number): Promise<Board> {
-    const board = await this.boardRepository.findOne(id, {
-      relations: ['user'],
-    });
+    const board = await this.boardRepository.findOne(id, {});
     if (!board) {
       throw new NotFoundException(`해당 게시물을 찾을 수 없습니다.`);
     }
