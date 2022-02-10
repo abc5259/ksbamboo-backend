@@ -19,7 +19,18 @@ export class BoardsService {
   ) {}
 
   async getAllBoards(): Promise<Board[]> {
-    return await this.boardRepository.find({ relations: ['user'] });
+    return await this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoin('board.user', 'user')
+      .addSelect([
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.ksDepartment',
+        'user.enterYear',
+        'user.verified',
+      ])
+      .getMany();
   }
 
   async getMeBoards(user: User): Promise<Board[]> {
@@ -30,19 +41,46 @@ export class BoardsService {
   }
 
   async getCategoryBoards(category: BoardCategoryType): Promise<Board[]> {
-    const boards = await this.boardRepository.find({
-      where: {
-        category,
-      },
-      relations: ['user', 'comments'],
-    });
+    const boards = await this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoin('board.user', 'user')
+      .addSelect([
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.ksDepartment',
+        'user.enterYear',
+        'user.verified',
+      ])
+      .where('board.category = :category', { category })
+      .getMany();
     return boards;
   }
 
   async getBoardById(id: number): Promise<Board> {
-    const board = await this.boardRepository.findOne(id, {
-      relations: ['user', 'comments', 'comments.user'],
-    });
+    const board = await this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoin('board.user', 'user')
+      .addSelect([
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.ksDepartment',
+        'user.enterYear',
+        'user.verified',
+      ])
+      .leftJoinAndSelect('board.comments', 'comments')
+      .leftJoin('comments.user', 'commentsUser')
+      .addSelect([
+        'commentsUser.id',
+        'commentsUser.username',
+        'commentsUser.email',
+        'commentsUser.ksDepartment',
+        'commentsUser.enterYear',
+        'commentsUser.verified',
+      ])
+      .where('board.id = :boardId', { boardId: id })
+      .getOne();
     if (!board) {
       throw new NotFoundException(`해당 게시물을 찾을 수 없습니다.`);
     }
