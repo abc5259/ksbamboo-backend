@@ -47,7 +47,7 @@ export class User extends BaseEntity {
   @UpdateDateColumn() // entity를 update시 자동으로 설정해 주는 special column
   updatedAt: Date;
 
-  @OneToMany((type) => Board, (board) => board.user, { eager: true })
+  @OneToMany((type) => Board, (board) => board.user)
   boards: Board[];
 
   @OneToMany((type) => Comment, (comment) => comment.user)
