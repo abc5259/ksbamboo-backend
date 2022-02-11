@@ -53,7 +53,6 @@ export class BoardsController {
 
   @Post()
   @UseGuards(AuthGuard())
-  @UsePipes(ValidationPipe)
   createBoard(
     @Body() createBoardDto: CreateBoardDto,
     @GetUser() user: User,
@@ -69,7 +68,7 @@ export class BoardsController {
   @Delete('/:id')
   @UseGuards(AuthGuard())
   deleteBoard(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: number,
     @GetUser() user: User,
   ): Promise<{ ok: boolean }> {
     return this.boardsService.deleteBoard(id, user);
@@ -78,17 +77,18 @@ export class BoardsController {
   @Patch('/:id')
   @UseGuards(AuthGuard())
   updateBoard(
-    @Param('id', ParseIntPipe) id,
+    @Param('id') id,
     @Body() updateBoardDto: UpdateBoardDto,
+    @GetUser() user: User,
   ): Promise<Board> {
-    return this.boardsService.updateBoard(id, updateBoardDto);
+    return this.boardsService.updateBoard(id, updateBoardDto, user);
   }
 
   //comment
   @Post('/:boardId/comment')
   @UseGuards(AuthGuard())
   createBoardComment(
-    @Param('boardId', ParseIntPipe) boardId,
+    @Param('boardId') boardId,
     @Body() createCommentDto: CreateCommentDto,
     @GetUser() user: User,
   ) {
