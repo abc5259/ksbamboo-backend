@@ -18,6 +18,7 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { BoardCategoryType } from './types/board-category.type';
 import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { UpdateCommentDto } from 'src/comments/dto/update-comment.dto';
 
 @Controller('boards')
 export class BoardsController {
@@ -96,12 +97,27 @@ export class BoardsController {
     );
   }
 
-  @Delete(`/:boardId/comment/:commentId`)
+  @Delete('/:boardId/comment/:commentId')
   @UseGuards(AuthGuard())
   deleteBoardComment(
     @Param() { boardId, commentId }: { boardId: number; commentId: number },
     @GetUser() user: User,
   ) {
     return this.boardsService.deleteBoardComment(boardId, commentId, user);
+  }
+
+  @Patch('/:boardId/comment/:commentId')
+  @UseGuards(AuthGuard())
+  updateBoardComment(
+    @Param() { boardId, commentId }: { boardId: number; commentId: number },
+    @Body() updateCommentDto: UpdateCommentDto,
+    @GetUser() user: User,
+  ) {
+    return this.boardsService.updateBoardComment(
+      boardId,
+      commentId,
+      updateCommentDto,
+      user,
+    );
   }
 }

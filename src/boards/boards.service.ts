@@ -9,6 +9,7 @@ import { BoardCategoryType } from './types/board-category.type';
 import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 import { CommentRepository } from 'src/comments/comment.repository';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { UpdateCommentDto } from 'src/comments/dto/update-comment.dto';
 
 @Injectable()
 export class BoardsService {
@@ -149,5 +150,23 @@ export class BoardsService {
       throw new NotFoundException('해당 댓글을 찾을 수 없습니다.');
     }
     return { ok: true };
+  }
+
+  async updateBoardComment(
+    boardId: number,
+    commentId: number,
+    { content }: UpdateCommentDto,
+    user: User,
+  ) {
+    await this.getBoardById(boardId);
+    const comment = await this.commentRepository.findOne({
+      id: commentId,
+      user,
+    });
+    if (!comment) {
+      throw new NotFoundException('해당 댓글을 찾을 수 없습니다.');
+    }
+    comment.content = content;
+    return await this.commentRepository.save(comment);
   }
 }
