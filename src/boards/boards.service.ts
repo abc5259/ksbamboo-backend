@@ -8,6 +8,7 @@ import { User } from 'src/auth/entities/user.entity';
 import { BoardCategoryType } from './types/board-category.type';
 import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 import { CommentRepository } from 'src/comments/comment.repository';
+import { UpdateBoardDto } from './dto/update-board.dto';
 
 @Injectable()
 export class BoardsService {
@@ -99,16 +100,23 @@ export class BoardsService {
     return { ok: true };
   }
 
-  async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
+  async updateBoard(
+    id: number,
+    { content, title }: UpdateBoardDto,
+  ): Promise<Board> {
     const board = await this.getBoardById(id);
     if (!board) {
       throw new NotFoundException('해당 게시물을 찾을 수 없습니다.');
     }
-    board.status = status;
+    if (title) {
+      board.title = title;
+    }
+    if (content) {
+      board.content = content;
+    }
     await this.boardRepository.save(board);
     return board;
   }
-
   //comment
   async createBoardComment(
     boardId: number,

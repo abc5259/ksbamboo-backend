@@ -15,13 +15,12 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/entities/user.entity';
-import { BoardStatus } from './board-status.enum.';
 import { Board } from './entities/board.entity';
 import { BoardsService } from './boards.service';
 import { CreateBoardDto } from './dto/create-board.dto';
-import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 import { BoardCategoryType } from './types/board-category.type';
 import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
+import { UpdateBoardDto } from './dto/update-board.dto';
 
 @Controller('boards')
 export class BoardsController {
@@ -76,13 +75,13 @@ export class BoardsController {
     return this.boardsService.deleteBoard(id, user);
   }
 
-  @Patch('/:id/status')
+  @Patch('/:id')
   @UseGuards(AuthGuard())
-  updateBoardStatus(
+  updateBoard(
     @Param('id', ParseIntPipe) id,
-    @Body('status', BoardStatusValidationPipe) status: BoardStatus,
+    @Body() updateBoardDto: UpdateBoardDto,
   ): Promise<Board> {
-    return this.boardsService.updateBoardStatus(id, status);
+    return this.boardsService.updateBoard(id, updateBoardDto);
   }
 
   //comment
