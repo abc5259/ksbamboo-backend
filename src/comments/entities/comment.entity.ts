@@ -33,6 +33,8 @@ export class Comment extends BaseEntity {
   user: User;
 
   //Post에 속해있음 일대다
-  @ManyToOne((type) => Board, (board) => board.comments)
+  @ManyToOne((type) => Board, (board) => board.comments, {
+    onDelete: 'CASCADE',
+  })
   board: Board;
 }

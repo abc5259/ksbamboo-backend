@@ -5,12 +5,9 @@ import {
   Get,
   Logger,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/get-user.decorator';
