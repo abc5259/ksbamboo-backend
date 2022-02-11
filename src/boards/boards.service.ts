@@ -130,4 +130,24 @@ export class BoardsService {
     }
     return this.commentRepository.createComment(board, createCommentDto, user);
   }
+
+  async deleteBoardComment(
+    boardId: number,
+    commentId: number,
+    user: User,
+  ): Promise<{ ok: boolean }> {
+    const board = await this.boardRepository.findOne(boardId);
+    if (!board) {
+      throw new NotFoundException('해당 게시물을 찾을 수 없습니다.');
+    }
+    const result = await this.commentRepository.delete({
+      id: commentId,
+      user,
+      board,
+    });
+    if (result.affected === 0) {
+      throw new NotFoundException('해당 댓글을 찾을 수 없습니다.');
+    }
+    return { ok: true };
+  }
 }

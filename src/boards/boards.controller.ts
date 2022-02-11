@@ -95,4 +95,13 @@ export class BoardsController {
       user,
     );
   }
+
+  @Delete(`/:boardId/comment/:commentId`)
+  @UseGuards(AuthGuard())
+  deleteBoardComment(
+    @Param() { boardId, commentId }: { boardId: number; commentId: number },
+    @GetUser() user: User,
+  ) {
+    return this.boardsService.deleteBoardComment(boardId, commentId, user);
+  }
 }
