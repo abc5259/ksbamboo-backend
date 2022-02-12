@@ -32,6 +32,9 @@ export class BoardsService {
         'user.enterYear',
         'user.verified',
       ])
+      .leftJoin('board.comments', 'comment')
+      .addSelect(['comment.id'])
+      .orderBy('board.createdAt', 'DESC')
       .getMany();
   }
 
