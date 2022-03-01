@@ -5,6 +5,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
@@ -12,6 +14,7 @@ import {
 } from 'typeorm';
 import { KsDepartment } from '../user-ksDepartment.type';
 import { Exclude } from 'class-transformer';
+import { Like } from 'src/boards/entities/like.entity';
 
 @Entity()
 @Unique(['email'])
@@ -52,4 +55,7 @@ export class User extends BaseEntity {
 
   @OneToMany((type) => Comment, (comment) => comment.user)
   comments: Comment[];
+
+  @ManyToMany((type) => Like, (like) => like.user)
+  like!: Like[];
 }

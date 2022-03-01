@@ -5,10 +5,11 @@ import { CommentRepository } from 'src/comments/comment.repository';
 import { BoardRepository } from './board.repository';
 import { BoardsController } from './boards.controller';
 import { BoardsService } from './boards.service';
+import { Like } from './entities/like.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BoardRepository, CommentRepository]),
+    TypeOrmModule.forFeature([BoardRepository, CommentRepository, Like]),
     AuthModule,
   ],
   controllers: [BoardsController],
