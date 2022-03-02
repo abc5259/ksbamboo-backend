@@ -120,4 +120,15 @@ export class BoardsController {
       user,
     );
   }
+
+  //like
+  @Patch('/:boardId/like')
+  @UseGuards(AuthGuard())
+  updateBoardLikes(
+    @Param() { boardId }: { boardId: number },
+    @GetUser() user: User,
+  ) {
+    console.log(user);
+    return this.boardsService.updateBoardLikes(boardId, user);
+  }
 }

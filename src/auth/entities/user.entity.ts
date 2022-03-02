@@ -56,6 +56,6 @@ export class User extends BaseEntity {
   @OneToMany((type) => Comment, (comment) => comment.user)
   comments: Comment[];
 
-  @ManyToMany((type) => Like, (like) => like.user)
-  like: Like[];
+  @OneToMany((type) => Board, (board) => board.likes)
+  likes: Like[];
 }

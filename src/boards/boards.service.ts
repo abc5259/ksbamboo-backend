@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { BoardStatus } from './board-status.enum.';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BoardRepository } from './board.repository';
+import { BoardRepository } from './repository/board.repository';
 import { Board } from './entities/board.entity';
 import { User } from 'src/auth/entities/user.entity';
 import { BoardCategoryType } from './types/board-category.type';
@@ -10,6 +9,7 @@ import { CreateCommentDto } from 'src/comments/dto/create-comment.dto';
 import { CommentRepository } from 'src/comments/comment.repository';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { UpdateCommentDto } from 'src/comments/dto/update-comment.dto';
+import { LikeRepository } from './repository/like.repository';
 
 @Injectable()
 export class BoardsService {
@@ -18,6 +18,8 @@ export class BoardsService {
     private boardRepository: BoardRepository,
     @InjectRepository(CommentRepository)
     private commentRepository: CommentRepository,
+    @InjectRepository(LikeRepository)
+    private likeRepository: LikeRepository,
   ) {}
 
   async getAllBoards(): Promise<Board[]> {
@@ -91,7 +93,6 @@ export class BoardsService {
     if (!board) {
       throw new NotFoundException(`해당 게시물을 찾을 수 없습니다.`);
     }
-    console.log(board);
     return board;
   }
 
@@ -174,5 +175,18 @@ export class BoardsService {
     }
     comment.content = content;
     return await this.commentRepository.save(comment);
+  }
+
+  async updateBoardLikes(boardId: number, user: User) {
+    const board = await this.getBoardById(boardId);
+    const boardLike = await this.likeRepository.findOne({ user, board });
+    // 이미 좋아요를 한경우 삭제
+    if (boardLike) {
+      return this.likeRepository.deleteLike(board, user);
+    }
+    // 좋아요가 안되어 있을경우 create
+    const like = await this.likeRepository.createLike(board, user);
+    board.likes.push(like);
+    return await this.boardRepository.save(board);
   }
 }

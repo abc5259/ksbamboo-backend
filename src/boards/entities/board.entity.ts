@@ -49,12 +49,6 @@ export class Board extends BaseEntity {
   @OneToMany((type) => Image, (image) => image.board)
   images: Image[];
 
-  @ManyToMany((type) => Like, (like) => like.board)
-  @JoinTable({
-    name: 'Like',
-    // 지정안해주면 post_favorites_user 기본값으로 만들어진다.
-    joinColumns: [{ name: 'board_id' }],
-    inverseJoinColumns: [{ name: 'user_id' }],
-  })
+  @OneToMany((type) => Like, (like) => like.board)
   likes: Like[];
 }
