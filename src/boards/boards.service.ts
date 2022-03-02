@@ -88,6 +88,8 @@ export class BoardsService {
         'commentsUser.verified',
       ])
       .leftJoinAndSelect('board.likes', 'likes')
+      .leftJoin('likes.user', 'likesUser')
+      .addSelect(['likesUser.id'])
       .where('board.id = :boardId', { boardId: id })
       .getOne();
     if (!board) {
