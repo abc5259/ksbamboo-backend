@@ -34,6 +34,7 @@ export class BoardsService {
       ])
       .leftJoin('board.comments', 'comment')
       .addSelect(['comment.id'])
+      .leftJoinAndSelect('board.likes', 'likes')
       .orderBy('board.createdAt', 'DESC')
       .getMany();
   }
@@ -84,11 +85,13 @@ export class BoardsService {
         'commentsUser.enterYear',
         'commentsUser.verified',
       ])
+      .leftJoinAndSelect('board.likes', 'likes')
       .where('board.id = :boardId', { boardId: id })
       .getOne();
     if (!board) {
       throw new NotFoundException(`해당 게시물을 찾을 수 없습니다.`);
     }
+    console.log(board);
     return board;
   }
 

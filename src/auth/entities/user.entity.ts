@@ -57,5 +57,5 @@ export class User extends BaseEntity {
   comments: Comment[];
 
   @ManyToMany((type) => Like, (like) => like.user)
-  like!: Like[];
+  like: Like[];
 }

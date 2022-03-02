@@ -35,6 +35,10 @@ export class AuthCredentialDto {
 
   @IsNotEmpty()
   @IsString()
+  passwordConfirm: string;
+
+  @IsNotEmpty()
+  @IsString()
   enterYear: string;
 
   @IsNotEmpty()

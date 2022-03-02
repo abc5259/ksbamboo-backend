@@ -51,10 +51,10 @@ export class Board extends BaseEntity {
 
   @ManyToMany((type) => Like, (like) => like.board)
   @JoinTable({
-    name: 'like',
+    name: 'Like',
     // 지정안해주면 post_favorites_user 기본값으로 만들어진다.
     joinColumns: [{ name: 'board_id' }],
     inverseJoinColumns: [{ name: 'user_id' }],
   })
-  likes!: Like[];
+  likes: Like[];
 }

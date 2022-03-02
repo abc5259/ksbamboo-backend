@@ -11,6 +11,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { Verification } from './entities/verification.entity';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { Like } from 'src/boards/entities/like.entity';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
         }, //expiresIn: 10
       }),
     }),
-    TypeOrmModule.forFeature([UserRepository, Verification]),
+    TypeOrmModule.forFeature([UserRepository, Verification, Like]),
     MailerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
