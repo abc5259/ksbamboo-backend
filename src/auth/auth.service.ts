@@ -44,11 +44,7 @@ export class AuthService {
     }
   }
 
-  async login({ email, password }: LoginInputDto): Promise<{
-    accessToken: string;
-    refreshToken: string;
-    user: User;
-  }> {
+  async login({ email, password }: LoginInputDto) {
     const user = await this.userRepository.findOne({ email });
     if (!user) {
       throw new UnauthorizedException('존재하지 않는 사용자입니다.');
@@ -64,10 +60,12 @@ export class AuthService {
     //유저 토큰 생성 (Secret + playload)
     // const payload = { email };
     // const accessToken = await this.jwtService.sign(payload);
-    const { accessToken } = await this.getJwtAccessToken(email);
-    const { refreshToken } = await this.getJwtRefreshToken(email);
+    const { accessToken, accessOption } =
+      await this.getCookieWithJwtAccessToken(email);
+    const { refreshToken, refreshOption } =
+      await this.getCookieWithJwtRefreshToken(email);
     await this.updateRefreshTokenInUser(refreshToken, email);
-    return { accessToken, refreshToken, user };
+    return { accessToken, accessOption, refreshToken, refreshOption, user };
   }
 
   async sendMail(email: string, code: string) {
@@ -114,19 +112,29 @@ export class AuthService {
   }
 
   //accessToken 전달
-  async getJwtAccessToken(email: string) {
+  async getCookieWithJwtAccessToken(email: string) {
     const payload = { email };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_SECRET'),
       expiresIn: `${this.configService.get(
-        'JWT_ACCESS_TOKEN_EXPIRATION_TIME', // 10초
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
       )}s`,
     });
-    return { accessToken: token };
+    return {
+      accessToken: token,
+      accessOption: {
+        domain: 'localhost',
+        path: '/',
+        httpOnly: true,
+        maxAge:
+          Number(this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME')) *
+          1000,
+      },
+    };
   }
 
   //refreshToken 전달
-  async getJwtRefreshToken(email: string) {
+  async getCookieWithJwtRefreshToken(email: string) {
     const payload = { email };
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_SECRET'),
@@ -134,7 +142,17 @@ export class AuthService {
         'JWT_REFRESH_TOKEN_EXPIRATION_TIME', // 일주일
       )}s`,
     });
-    return { refreshToken: token };
+    return {
+      refreshToken: token,
+      refreshOption: {
+        domain: 'localhost',
+        path: '/',
+        httpOnly: true,
+        maxAge:
+          Number(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')) *
+          1000,
+      },
+    };
   }
 
   // RefreshToken 암호화 and 저장
@@ -185,10 +203,10 @@ export class AuthService {
   }
 
   async getNewAccessAndRefreshToken(email: string) {
-    const { refreshToken } = await this.getJwtRefreshToken(email);
+    const { refreshToken } = await this.getCookieWithJwtRefreshToken(email);
     await this.updateRefreshTokenInUser(refreshToken, email);
     return {
-      accessToken: await this.getJwtAccessToken(email),
+      accessToken: await this.getCookieWithJwtAccessToken(email),
       refreshToken,
     };
   }

@@ -2,12 +2,10 @@ import {
   Body,
   Controller,
   Get,
-  Param,
-  ParseIntPipe,
   Post,
   Query,
   Redirect,
-  Req,
+  Res,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
@@ -18,6 +16,7 @@ import { GetUser } from './get-user.decorator';
 import { User } from './entities/user.entity';
 import { LoginInputDto } from './dto/login-user.dto';
 import { JwtRefreshTokenGuard } from './guards/jwt-refresh.guard';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -31,10 +30,15 @@ export class AuthController {
   }
 
   @Post('/login')
-  login(
+  async login(
+    @Res({ passthrough: true }) res: Response,
     @Body(ValidationPipe) loginInputDto: LoginInputDto,
-  ): Promise<{ accessToken: string; user: User }> {
-    return this.authService.login(loginInputDto);
+  ) {
+    const { accessToken, accessOption, refreshToken, refreshOption, user } =
+      await this.authService.login(loginInputDto);
+    res.cookie('Authentication', accessToken, accessOption);
+    res.cookie('Refresh', refreshToken, refreshOption);
+    return user;
   }
 
   @Get('/user')
@@ -46,17 +50,18 @@ export class AuthController {
   @Post('/refresh')
   @UseGuards(JwtRefreshTokenGuard)
   async refresh(
+    @Res({ passthrough: true }) res: Response,
     @GetUser() user: User,
-    @Body() { refresh_token }: { refresh_token: string },
+    // @Body() { refresh_token }: { refresh_token: string },
   ) {
-    const { result } = await this.authService.getUserRefreshTokenMatches(
-      refresh_token,
-      user.email,
-    );
-    if (result) {
-      const { accessToken } = await this.authService.getJwtAccessToken(
-        user.email,
-      );
+    // const { result } = await this.authService.getUserRefreshTokenMatches(
+    //   refresh_token,
+    //   user.email,
+    // );
+    if (user) {
+      const { accessToken, accessOption } =
+        await this.authService.getCookieWithJwtAccessToken(user.email);
+      res.cookie('Authentication', accessToken, accessOption);
       return { accessToken };
     }
   }

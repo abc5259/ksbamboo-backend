@@ -5,6 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { User } from '../entities/user.entity';
 import { UserRepository } from '../user.repository';
 import { ConfigService } from '@nestjs/config';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
@@ -15,14 +16,21 @@ export class JwtRefreshStrategy extends PassportStrategy(
     @InjectRepository(UserRepository)
     private readonly userRepository: UserRepository,
     private readonly configService: ConfigService,
+    private readonly authService: AuthService,
   ) {
     super({
       secretOrKey: configService.get<string>('JWT_SECRET'),
-      jwtFromRequest: ExtractJwt.fromBodyField('refresh_token'),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request) => {
+          return request?.cookies?.Refresh;
+        },
+      ]),
     });
   }
 
-  async validate({ email }) {
+  async validate(req, { email }) {
+    const refreshToken = req.cookies?.Refresh;
+    await this.authService.getUserRefreshTokenMatches(refreshToken, email);
     const user: User = await this.userRepository.findOne(
       { email },
       { select: ['id', 'ksDepartment', 'verified', 'username', 'email'] },
