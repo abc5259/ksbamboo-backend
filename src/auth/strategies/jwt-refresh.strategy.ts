@@ -25,11 +25,13 @@ export class JwtRefreshStrategy extends PassportStrategy(
           return request?.cookies?.Refresh;
         },
       ]),
+      passReqToCallback: true,
     });
   }
 
   async validate(req, { email }) {
     const refreshToken = req.cookies?.Refresh;
+    console.log(refreshToken);
     await this.authService.getUserRefreshTokenMatches(refreshToken, email);
     const user: User = await this.userRepository.findOne(
       { email },

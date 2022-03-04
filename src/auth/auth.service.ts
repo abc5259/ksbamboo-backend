@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthCredentialDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
@@ -65,7 +64,25 @@ export class AuthService {
     const { refreshToken, refreshOption } =
       await this.getCookieWithJwtRefreshToken(email);
     await this.updateRefreshTokenInUser(refreshToken, email);
-    return { accessToken, accessOption, refreshToken, refreshOption, user };
+    const returnUser = await this.userRepository
+      .createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.ksDepartment',
+        'user.enterYear',
+        'user.verified',
+      ])
+      .where('user.email = :email', { email })
+      .getOne();
+    return {
+      accessToken,
+      accessOption,
+      refreshToken,
+      refreshOption,
+      user: returnUser,
+    };
   }
 
   async sendMail(email: string, code: string) {
