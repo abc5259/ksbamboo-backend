@@ -38,7 +38,7 @@ export class AuthController {
       await this.authService.login(loginInputDto);
     res.cookie('Authentication', accessToken, accessOption);
     res.cookie('Refresh', refreshToken, refreshOption);
-    return user;
+    return { user };
   }
 
   @Get('/user')
@@ -52,18 +52,26 @@ export class AuthController {
   async refresh(
     @Res({ passthrough: true }) res: Response,
     @GetUser() user: User,
-    // @Body() { refresh_token }: { refresh_token: string },
   ) {
-    // const { result } = await this.authService.getUserRefreshTokenMatches(
-    //   refresh_token,
-    //   user.email,
-    // );
     if (user) {
       const { accessToken, accessOption } =
         await this.authService.getCookieWithJwtAccessToken(user.email);
       res.cookie('Authentication', accessToken, accessOption);
-      return { accessToken };
+      return { user };
     }
+  }
+
+  @Get('/logout')
+  @UseGuards(JwtRefreshTokenGuard)
+  async logOut(
+    @Res({ passthrough: true }) res: Response,
+    @GetUser() user: User,
+  ) {
+    const { accessOption, refreshOption } =
+      this.authService.getCookiesForLogOut();
+    await this.authService.removeRefreshToken(user.email);
+    res.cookie('Authentication', '', accessOption);
+    res.cookie('Refresh', '', refreshOption);
   }
 
   // @Get('/email/:code')

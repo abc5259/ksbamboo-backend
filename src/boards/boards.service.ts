@@ -36,7 +36,8 @@ export class BoardsService {
       ])
       .leftJoin('board.comments', 'comment')
       .addSelect(['comment.id'])
-      .leftJoinAndSelect('board.likes', 'likes')
+      .leftJoin('board.likes', 'likes')
+      .addSelect(['likes.id'])
       .orderBy('board.createdAt', 'DESC')
       .getMany();
   }
@@ -60,6 +61,8 @@ export class BoardsService {
         'user.enterYear',
         'user.verified',
       ])
+      .leftJoin('board.likes', 'likes')
+      .addSelect(['likes.id'])
       .where('board.category = :category', { category })
       .getMany();
     return boards;
