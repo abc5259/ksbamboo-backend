@@ -30,11 +30,17 @@ export class BoardsController {
     return this.boardsService.getAllBoards();
   }
 
+  // @Get('/me')
+  // @UseGuards(AuthGuard())
+  // getMeBoards(@GetUser() user: User) {
+  //   this.logger.verbose(`User: ${user.username} trying to get all Boards`);
+  //   return this.boardsService.getMeBoards(user);
+  // }
   @Get('/me')
   @UseGuards(AuthGuard())
-  getMeBoards(@GetUser() user: User) {
-    this.logger.verbose(`User: ${user.username} trying to get all Boards`);
-    return this.boardsService.getMeBoards(user);
+  getLoginUserBoards(@GetUser() user: User) {
+    console.log(user);
+    return this.boardsService.getLoginUserBoards(user);
   }
 
   @Get('/category/:category')
@@ -132,13 +138,8 @@ export class BoardsController {
   }
 
   //user
-  @Get('/me')
-  @UseGuards(AuthGuard())
-  getLoginUserBoards(@GetUser() user: User) {
-    return this.boardsService.getLoginUserBoards(user);
-  }
 
-  @Get('/me/commnet')
+  @Get('/me/comment')
   @UseGuards(AuthGuard())
   getLoginUserCommentBoards(@GetUser() user: User) {
     return this.boardsService.getLoginUserCommentBoards(user);

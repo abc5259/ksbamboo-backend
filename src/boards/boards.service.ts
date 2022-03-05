@@ -213,11 +213,13 @@ export class BoardsService {
       .leftJoin('board.likes', 'likes')
       .addSelect(['likes.id'])
       .orderBy('board.createdAt', 'DESC')
-      .where('board.user = :user', { user })
+      .where('board.user.id = :userId', { userId: user.id })
       .getMany();
   }
 
   async getLoginUserCommentBoards(user: User) {
+    // board에는 여러개의 comments가 있다
+    // comment에는 하나의 user가 있다.
     return await this.boardRepository
       .createQueryBuilder('board')
       .leftJoin('board.user', 'user')
@@ -229,12 +231,20 @@ export class BoardsService {
         'user.enterYear',
         'user.verified',
       ])
-      .leftJoin('board.comments', 'comment')
-      .addSelect(['comment.id'])
-      .leftJoin('board.likes', 'likes')
-      .addSelect(['likes.id'])
-      .orderBy('board.createdAt', 'DESC')
-      .where('comment.user = :user', { user })
+      .leftJoinAndSelect('board.comments', 'comments')
+      .leftJoin('comments.user', 'commentsUser')
+      .addSelect([
+        'commentsUser.id',
+        'commentsUser.username',
+        'commentsUser.email',
+        'commentsUser.ksDepartment',
+        'commentsUser.enterYear',
+        'commentsUser.verified',
+      ])
+      .leftJoinAndSelect('board.likes', 'likes')
+      .leftJoin('likes.user', 'likesUser')
+      .addSelect(['likesUser.id'])
+      .where('commentsUser.email = :userEmail', { userEmail: user.email })
       .getMany();
   }
 }
