@@ -14,10 +14,10 @@ export class Like extends BaseEntity {
   id: number;
 
   @ManyToOne(() => User, (user) => user.likes)
-  @JoinColumn({ name: 'user_id' })
+  // @JoinColumn({ name: 'user_id' })
   user: User;
 
   @ManyToOne(() => Board, (board) => board.likes)
-  @JoinColumn({ name: 'board_id' })
+  // @JoinColumn({ name: 'board_id' })
   board: Board;
 }

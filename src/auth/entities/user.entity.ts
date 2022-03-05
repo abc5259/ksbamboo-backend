@@ -15,6 +15,7 @@ import {
 import { KsDepartment } from '../user-ksDepartment.type';
 import { Exclude } from 'class-transformer';
 import { Like } from 'src/boards/entities/like.entity';
+import { Favorite } from 'src/boards/entities/favorite.entity';
 
 @Entity()
 @Unique(['email'])
@@ -58,4 +59,7 @@ export class User extends BaseEntity {
 
   @OneToMany((type) => Board, (board) => board.likes)
   likes: Like[];
+
+  @OneToMany((type) => Favorite, (favorite) => favorite.board)
+  favorites: Favorite[];
 }

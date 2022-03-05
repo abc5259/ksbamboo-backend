@@ -15,6 +15,7 @@ import {
 } from 'typeorm';
 import { BoardStatus } from '../board-status.enum.';
 import { BoardCategoryType } from '../types/board-category.type';
+import { Favorite } from './favorite.entity';
 import { Like } from './like.entity';
 
 @Entity()
@@ -51,4 +52,7 @@ export class Board extends BaseEntity {
 
   @OneToMany((type) => Like, (like) => like.board)
   likes: Like[];
+
+  @OneToMany((type) => Favorite, (favorite) => favorite.board)
+  favorites: Favorite[];
 }
