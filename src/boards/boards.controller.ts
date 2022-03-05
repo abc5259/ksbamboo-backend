@@ -128,7 +128,19 @@ export class BoardsController {
     @Param() { boardId }: { boardId: number },
     @GetUser() user: User,
   ) {
-    console.log(user);
     return this.boardsService.updateBoardLikes(boardId, user);
+  }
+
+  //user
+  @Get('/me')
+  @UseGuards(AuthGuard())
+  getLoginUserBoards(@GetUser() user: User) {
+    return this.boardsService.getLoginUserBoards(user);
+  }
+
+  @Get('/me/commnet')
+  @UseGuards(AuthGuard())
+  getLoginUserCommentBoards(@GetUser() user: User) {
+    return this.boardsService.getLoginUserCommentBoards(user);
   }
 }

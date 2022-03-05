@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Logger,
   Post,
   Query,
   Redirect,
@@ -20,6 +21,7 @@ import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
+  private logger = new Logger('AuthController');
   constructor(private authService: AuthService) {}
 
   @Post('/join')
@@ -53,6 +55,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @GetUser() user: User,
   ) {
+    this.logger.verbose(`User: ${user.username} trying to refreshToken`);
     if (user) {
       const { accessToken, accessOption } =
         await this.authService.getCookieWithJwtAccessToken(user.email);

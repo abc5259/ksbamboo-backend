@@ -194,4 +194,47 @@ export class BoardsService {
     board.likes.push(like);
     return await this.boardRepository.save(board);
   }
+
+  //user
+  async getLoginUserBoards(user: User) {
+    return await this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoin('board.user', 'user')
+      .addSelect([
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.ksDepartment',
+        'user.enterYear',
+        'user.verified',
+      ])
+      .leftJoin('board.comments', 'comment')
+      .addSelect(['comment.id'])
+      .leftJoin('board.likes', 'likes')
+      .addSelect(['likes.id'])
+      .orderBy('board.createdAt', 'DESC')
+      .where('board.user = :user', { user })
+      .getMany();
+  }
+
+  async getLoginUserCommentBoards(user: User) {
+    return await this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoin('board.user', 'user')
+      .addSelect([
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.ksDepartment',
+        'user.enterYear',
+        'user.verified',
+      ])
+      .leftJoin('board.comments', 'comment')
+      .addSelect(['comment.id'])
+      .leftJoin('board.likes', 'likes')
+      .addSelect(['likes.id'])
+      .orderBy('board.createdAt', 'DESC')
+      .where('comment.user = :user', { user })
+      .getMany();
+  }
 }
