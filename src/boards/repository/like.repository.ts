@@ -7,7 +7,7 @@ import { Like } from '../entities/like.entity';
 @EntityRepository(Like)
 export class LikeRepository extends Repository<Like> {
   async createLike(board: Board, user: User) {
-    const like = await this.create({
+    const like = this.create({
       user,
       board,
     });

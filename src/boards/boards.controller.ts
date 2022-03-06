@@ -30,12 +30,6 @@ export class BoardsController {
     return this.boardsService.getAllBoards();
   }
 
-  // @Get('/me')
-  // @UseGuards(AuthGuard())
-  // getMeBoards(@GetUser() user: User) {
-  //   this.logger.verbose(`User: ${user.username} trying to get all Boards`);
-  //   return this.boardsService.getMeBoards(user);
-  // }
   @Get('/me')
   @UseGuards(AuthGuard())
   getLoginUserBoards(@GetUser() user: User) {
@@ -138,10 +132,19 @@ export class BoardsController {
   }
 
   //user
-
   @Get('/me/comment')
   @UseGuards(AuthGuard())
   getLoginUserCommentBoards(@GetUser() user: User) {
     return this.boardsService.getLoginUserCommentBoards(user);
+  }
+
+  //favorite
+  @Patch('/:boardId/favorite')
+  @UseGuards(AuthGuard())
+  updateBoardFavorites(
+    @Param() { boardId }: { boardId: number },
+    @GetUser() user: User,
+  ) {
+    return this.boardsService.updateBoardFavorites(boardId, user);
   }
 }

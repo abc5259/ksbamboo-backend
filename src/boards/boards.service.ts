@@ -10,6 +10,7 @@ import { CommentRepository } from 'src/comments/comment.repository';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { UpdateCommentDto } from 'src/comments/dto/update-comment.dto';
 import { LikeRepository } from './repository/like.repository';
+import { FavoriteRepository } from './repository/favorite.repository';
 
 @Injectable()
 export class BoardsService {
@@ -20,6 +21,8 @@ export class BoardsService {
     private commentRepository: CommentRepository,
     @InjectRepository(LikeRepository)
     private likeRepository: LikeRepository,
+    @InjectRepository(FavoriteRepository)
+    private favoriteRepository: FavoriteRepository,
   ) {}
 
   async getAllBoards(): Promise<Board[]> {
@@ -183,16 +186,15 @@ export class BoardsService {
   }
 
   async updateBoardLikes(boardId: number, user: User) {
-    const board = await this.getBoardById(boardId);
+    const board = await this.boardRepository.findOne(boardId);
     const boardLike = await this.likeRepository.findOne({ user, board });
     // 이미 좋아요를 한경우 삭제
     if (boardLike) {
       return this.likeRepository.deleteLike(board, user);
     }
     // 좋아요가 안되어 있을경우 create
-    const like = await this.likeRepository.createLike(board, user);
-    board.likes.push(like);
-    return await this.boardRepository.save(board);
+    await this.likeRepository.createLike(board, user);
+    return await this.getBoardById(boardId);
   }
 
   //user
@@ -246,5 +248,20 @@ export class BoardsService {
       .addSelect(['likesUser.id'])
       .where('commentsUser.email = :userEmail', { userEmail: user.email })
       .getMany();
+  }
+
+  //BoardFavorite + 1
+  async updateBoardFavorites(boardId: number, user: User) {
+    const board = await this.boardRepository.findOne(boardId);
+    const isBoardFavorite = await this.favoriteRepository.findOne({
+      board,
+      user,
+    });
+    //이미 스크랩을 한경우 삭제
+    if (isBoardFavorite) {
+      return this.favoriteRepository.deleteFavorite(board, user);
+    }
+    await this.favoriteRepository.createFarvorite(user, board);
+    return this.getBoardById(boardId);
   }
 }
