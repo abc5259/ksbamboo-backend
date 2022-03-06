@@ -7,6 +7,8 @@ import {
   Param,
   Patch,
   Post,
+  Request,
+  Sse,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -24,6 +26,17 @@ import { UpdateCommentDto } from 'src/comments/dto/update-comment.dto';
 export class BoardsController {
   private logger = new Logger('BoardController');
   constructor(private boardsService: BoardsService) {}
+
+  @Sse('events')
+  events(@Request() req) {
+    return this.boardsService.subscribe();
+  }
+
+  @Post('emit')
+  async emit() {
+    this.boardsService.emit({ emitting: new Date().toISOString() });
+    return { ok: true };
+  }
 
   @Get()
   getAllBoards(): Promise<Board[]> {

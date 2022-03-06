@@ -11,9 +11,11 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 import { UpdateCommentDto } from 'src/comments/dto/update-comment.dto';
 import { LikeRepository } from './repository/like.repository';
 import { FavoriteRepository } from './repository/favorite.repository';
-
+import { fromEvent } from 'rxjs';
+import { EventEmitter } from 'events';
 @Injectable()
 export class BoardsService {
+  private readonly emitter: EventEmitter;
   constructor(
     @InjectRepository(BoardRepository)
     private boardRepository: BoardRepository,
@@ -23,7 +25,17 @@ export class BoardsService {
     private likeRepository: LikeRepository,
     @InjectRepository(FavoriteRepository)
     private favoriteRepository: FavoriteRepository,
-  ) {}
+  ) {
+    this.emitter = new EventEmitter();
+  }
+
+  subscribe() {
+    return fromEvent(this.emitter, 'eventName');
+  }
+
+  async emit(data) {
+    this.emitter.emit('eventName', { data });
+  }
 
   async getAllBoards(): Promise<Board[]> {
     return await this.boardRepository
