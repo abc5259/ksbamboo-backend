@@ -64,6 +64,8 @@ export class BoardsService {
         'user.enterYear',
         'user.verified',
       ])
+      .leftJoin('board.comments', 'comment')
+      .addSelect(['comment.id'])
       .leftJoin('board.likes', 'likes')
       .addSelect(['likes.id'])
       .where('board.category = :category', { category })
@@ -96,6 +98,9 @@ export class BoardsService {
       .leftJoinAndSelect('board.likes', 'likes')
       .leftJoin('likes.user', 'likesUser')
       .addSelect(['likesUser.id'])
+      .leftJoinAndSelect('board.favorites', 'favorites')
+      .leftJoin('favorites.user', 'favoritesUser')
+      .addSelect(['favoritesUser.id'])
       .where('board.id = :boardId', { boardId: id })
       .getOne();
     if (!board) {
@@ -263,5 +268,30 @@ export class BoardsService {
     }
     await this.favoriteRepository.createFarvorite(user, board);
     return this.getBoardById(boardId);
+  }
+
+  async getMyFovoriteBoards(user: User) {
+    return await this.boardRepository
+      .createQueryBuilder('board')
+      .leftJoin('board.user', 'user')
+      .addSelect([
+        'user.id',
+        'user.username',
+        'user.email',
+        'user.ksDepartment',
+        'user.enterYear',
+        'user.verified',
+      ])
+      .leftJoinAndSelect('board.comments', 'comments')
+      .leftJoin('comments.user', 'commentsUser')
+      .addSelect(['commentsUser.id'])
+      .leftJoinAndSelect('board.likes', 'likes')
+      .leftJoin('likes.user', 'likesUser')
+      .addSelect(['likesUser.id'])
+      .leftJoinAndSelect('board.favorites', 'favorites')
+      .leftJoin('favorites.user', 'favoritesUser')
+      .addSelect(['favoritesUser.id'])
+      .where('favoritesUser.id = :userId', { userId: user.id })
+      .getMany();
   }
 }

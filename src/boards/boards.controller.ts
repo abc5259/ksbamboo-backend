@@ -147,4 +147,10 @@ export class BoardsController {
   ) {
     return this.boardsService.updateBoardFavorites(boardId, user);
   }
+
+  @Get('/me/favorite')
+  @UseGuards(AuthGuard())
+  getMyFovoriteBoards(@GetUser() user: User) {
+    return this.boardsService.getMyFovoriteBoards(user);
+  }
 }
