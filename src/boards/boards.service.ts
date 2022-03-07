@@ -15,7 +15,7 @@ import { fromEvent, Subject } from 'rxjs';
 import { EventEmitter } from 'events';
 @Injectable()
 export class BoardsService {
-  private events = new Subject();
+  private readonly emitter = new EventEmitter();
   constructor(
     @InjectRepository(BoardRepository)
     private boardRepository: BoardRepository,
@@ -27,13 +27,13 @@ export class BoardsService {
     private favoriteRepository: FavoriteRepository,
   ) {}
 
-  addEvent(event) {
-    this.events.next(event);
+  subscribe() {
+    return fromEvent(this.emitter, 'newBoard');
   }
 
-  sendEvents() {
-    console.log(this.events.asObservable());
-    return this.events.asObservable();
+  async emit(data) {
+    console.log(data);
+    return this.emitter.emit('newBoard', { data });
   }
 
   async getAllBoards(): Promise<Board[]> {
@@ -121,6 +121,7 @@ export class BoardsService {
   }
 
   createBoard(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
+    this.emit('새로운 게시글');
     return this.boardRepository.createBoard(createBoardDto, user);
   }
 

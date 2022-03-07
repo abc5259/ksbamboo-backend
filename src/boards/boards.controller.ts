@@ -28,8 +28,8 @@ export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
   @Sse('events')
-  doTheSse() {
-    return this.boardsService.sendEvents();
+  events(@Request() req) {
+    return this.boardsService.subscribe();
   }
 
   @Get()
@@ -67,7 +67,6 @@ export class BoardsController {
         createBoardDto,
       )}`,
     );
-    this.boardsService.addEvent('dawd');
     return this.boardsService.createBoard(createBoardDto, user);
   }
 
