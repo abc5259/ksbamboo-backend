@@ -20,19 +20,10 @@ import { User } from './entities/user.entity';
 import { LoginInputDto } from './dto/login-user.dto';
 import { JwtRefreshTokenGuard } from './guards/jwt-refresh.guard';
 import { Response } from 'express';
-import { interval, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 @Controller('auth')
 export class AuthController {
   private logger = new Logger('AuthController');
   constructor(private authService: AuthService) {}
-
-  // @Sse('sse')
-  // sse(): Observable<MessageEvent> {
-  //   return interval(1000).pipe(
-  //     map((_) => ({ data: { hello: 'world' } } as MessageEvent)),
-  //   );
-  // }
 
   @Post('/join')
   signUp(
