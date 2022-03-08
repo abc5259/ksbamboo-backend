@@ -30,8 +30,15 @@ export class BoardsController {
 
   @Sse('events')
   events(@Query() { userId }: { userId?: string }) {
-    console.log(userId);
-    return this.boardsService.subscribe(userId);
+    return this.boardsService.newBoardSubscribe(userId);
+  }
+
+  @Sse('events/:category')
+  categoryEvents(
+    @Param('category') category: BoardCategoryType,
+    @Query() { userId }: { userId?: string },
+  ) {
+    return this.boardsService.categoryNewBoardSubscribe(category, userId);
   }
 
   @Get()

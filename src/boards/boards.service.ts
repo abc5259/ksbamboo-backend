@@ -13,6 +13,8 @@ import { LikeRepository } from './repository/like.repository';
 import { FavoriteRepository } from './repository/favorite.repository';
 import { fromEvent, Subject } from 'rxjs';
 import { EventEmitter } from 'events';
+import { eventNames } from 'process';
+import { string } from 'joi';
 @Injectable()
 export class BoardsService {
   private readonly emitter = new EventEmitter();
@@ -27,14 +29,53 @@ export class BoardsService {
     private favoriteRepository: FavoriteRepository,
   ) {}
 
-  subscribe(userId?: string) {
+  newBoardSubscribe(userId?: string) {
     if (userId) {
       return fromEvent(this.emitter, `newBoard/${userId}`);
     }
     return fromEvent(this.emitter, `newBoard`);
   }
 
-  async emit(eventName: string, data) {
+  categoryNewBoardSubscribe(category: BoardCategoryType, userId?: string) {
+    if (userId) {
+      return fromEvent(this.emitter, `newBoard/${category}/${userId}`);
+    }
+    return fromEvent(this.emitter, `newBoard/${category}`);
+  }
+
+  newBoardEmit(category: BoardCategoryType, userId: number) {
+    this.emitter
+      .eventNames()
+      .filter((eventName) => {
+        if (typeof eventName === 'string') {
+          return !eventName.includes(`${category}`);
+        }
+      })
+      .filter((eventName) => eventName !== `newBoard/${userId}`)
+      .map((eventName) =>
+        this.newBoardNotificationEmit(eventName as string, '새로운 게시글'),
+      );
+  }
+
+  newCategoryBoardEmit(category: BoardCategoryType, userId: number) {
+    this.emitter
+      .eventNames()
+      .filter((eventName) => {
+        if (typeof eventName === 'string') {
+          return eventName.includes(`${category}`);
+        }
+      })
+      .filter((eventName) => {
+        if (typeof eventName === 'string') {
+          return eventName !== `newBoard/${category}/${userId}`;
+        }
+      })
+      .map((eventName) =>
+        this.newBoardNotificationEmit(eventName as string, '새로운 게시글'),
+      );
+  }
+
+  async newBoardNotificationEmit(eventName: string, data) {
     console.log(eventName);
     return this.emitter.emit(eventName, { data });
   }
@@ -124,10 +165,11 @@ export class BoardsService {
   }
 
   createBoard(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
-    this.emitter
-      .eventNames()
-      .filter((eventName) => eventName !== `newBoard/${user.id}`)
-      .map((eventName) => this.emit(eventName as string, '새로운 게시글'));
+    if (createBoardDto.category === '전체') {
+      this.newBoardEmit(createBoardDto.category, user.id);
+    } else {
+      this.newCategoryBoardEmit(createBoardDto.category, user.id);
+    }
     return this.boardRepository.createBoard(createBoardDto, user);
   }
 
