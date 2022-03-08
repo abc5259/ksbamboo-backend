@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   Sse,
   UseGuards,
@@ -28,8 +29,9 @@ export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
   @Sse('events')
-  events(@Request() req) {
-    return this.boardsService.subscribe();
+  events(@Query() { userId }: { userId?: string }) {
+    console.log(userId);
+    return this.boardsService.subscribe(userId);
   }
 
   @Get()

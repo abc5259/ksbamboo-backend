@@ -27,13 +27,16 @@ export class BoardsService {
     private favoriteRepository: FavoriteRepository,
   ) {}
 
-  subscribe() {
-    return fromEvent(this.emitter, 'newBoard');
+  subscribe(userId?: string) {
+    if (userId) {
+      return fromEvent(this.emitter, `newBoard/${userId}`);
+    }
+    return fromEvent(this.emitter, `newBoard`);
   }
 
-  async emit(data) {
-    console.log(data);
-    return this.emitter.emit('newBoard', { data });
+  async emit(eventName: string, data) {
+    console.log(eventName);
+    return this.emitter.emit(eventName, { data });
   }
 
   async getAllBoards(): Promise<Board[]> {
@@ -121,7 +124,10 @@ export class BoardsService {
   }
 
   createBoard(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
-    this.emit('새로운 게시글');
+    this.emitter
+      .eventNames()
+      .filter((eventName) => eventName !== `newBoard/${user.id}`)
+      .map((eventName) => this.emit(eventName as string, '새로운 게시글'));
     return this.boardRepository.createBoard(createBoardDto, user);
   }
 
