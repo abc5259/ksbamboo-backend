@@ -13,6 +13,7 @@ import { Image } from './image/entity/image.entity';
 import { Verification } from './auth/entities/verification.entity';
 import { Like } from './boards/entities/like.entity';
 import { Favorite } from './boards/entities/favorite.entity';
+import { Notification } from './auth/entities/notification.entity';
 
 @Module({
   imports: [
@@ -43,7 +44,16 @@ import { Favorite } from './boards/entities/favorite.entity';
       password: process.env.DB_PASSWORD, //만든 데이터베이스의 비번을 적어준다
       database: process.env.DB_NAME, //만든 데이터베이스 이름을 적어준다.
       synchronize: true, //데이터베이스를 너의 모듈의 현재 상태로 마이크래이션한다는 뜻
-      entities: [User, Board, Comment, Image, Verification, Like, Favorite],
+      entities: [
+        User,
+        Board,
+        Comment,
+        Image,
+        Verification,
+        Like,
+        Favorite,
+        Notification,
+      ],
     }),
     BoardsModule,
     AuthModule,

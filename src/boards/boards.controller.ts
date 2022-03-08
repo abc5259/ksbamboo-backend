@@ -38,7 +38,7 @@ export class BoardsController {
     @Param('category') category: BoardCategoryType,
     @Query() { userId }: { userId?: string },
   ) {
-    return this.boardsService.categoryNewBoardSubscribe(category, userId);
+    return this.boardsService.newCategoryBoardSubscribe(category, userId);
   }
 
   @Get()

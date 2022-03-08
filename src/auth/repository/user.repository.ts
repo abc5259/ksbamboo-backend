@@ -3,8 +3,8 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
-import { AuthCredentialDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
+import { AuthCredentialDto } from '../dto/create-user.dto';
+import { User } from '../entities/user.entity';
 import * as bcrypt from 'bcryptjs';
 
 @EntityRepository(User)

@@ -5,12 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { UserRepository } from './user.repository';
+import { UserRepository } from './repository/user.repository';
 import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { Verification } from './entities/verification.entity';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { NotificationRepository } from './repository/notification.repository';
 
 @Module({
   imports: [
@@ -26,7 +27,11 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
         }, //expiresIn: 10
       }),
     }),
-    TypeOrmModule.forFeature([UserRepository, Verification]),
+    TypeOrmModule.forFeature([
+      UserRepository,
+      Verification,
+      NotificationRepository,
+    ]),
     MailerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({

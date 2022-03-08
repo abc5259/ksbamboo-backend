@@ -11,10 +11,8 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 import { UpdateCommentDto } from 'src/comments/dto/update-comment.dto';
 import { LikeRepository } from './repository/like.repository';
 import { FavoriteRepository } from './repository/favorite.repository';
-import { fromEvent, Subject } from 'rxjs';
+import { fromEvent } from 'rxjs';
 import { EventEmitter } from 'events';
-import { eventNames } from 'process';
-import { string } from 'joi';
 @Injectable()
 export class BoardsService {
   private readonly emitter = new EventEmitter();
@@ -36,7 +34,7 @@ export class BoardsService {
     return fromEvent(this.emitter, `newBoard`);
   }
 
-  categoryNewBoardSubscribe(category: BoardCategoryType, userId?: string) {
+  newCategoryBoardSubscribe(category: BoardCategoryType, userId?: string) {
     if (userId) {
       return fromEvent(this.emitter, `newBoard/${category}/${userId}`);
     }

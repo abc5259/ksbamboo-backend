@@ -5,8 +5,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToMany,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   Unique,
@@ -16,6 +14,7 @@ import { KsDepartment } from '../user-ksDepartment.type';
 import { Exclude } from 'class-transformer';
 import { Like } from 'src/boards/entities/like.entity';
 import { Favorite } from 'src/boards/entities/favorite.entity';
+import { Notification } from './notification.entity';
 
 @Entity()
 @Unique(['email'])
@@ -62,4 +61,7 @@ export class User extends BaseEntity {
 
   @OneToMany((type) => Favorite, (favorite) => favorite.board)
   favorites: Favorite[];
+
+  @OneToMany((type) => Notification, (notification) => notification.user)
+  notifications: Notification[];
 }
