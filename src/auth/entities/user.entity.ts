@@ -14,7 +14,7 @@ import { KsDepartment } from '../user-ksDepartment.type';
 import { Exclude } from 'class-transformer';
 import { Like } from 'src/boards/entities/like.entity';
 import { Favorite } from 'src/boards/entities/favorite.entity';
-import { Notification } from './notification.entity';
+import { Notification } from '../../notification/notification.entity';
 
 @Entity()
 @Unique(['email'])

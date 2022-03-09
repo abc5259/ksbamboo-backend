@@ -7,6 +7,7 @@ import { BoardsController } from './boards.controller';
 import { BoardsService } from './boards.service';
 import { LikeRepository } from './repository/like.repository';
 import { FavoriteRepository } from './repository/favorite.repository';
+import { NotificationRepository } from 'src/notification/notification.repository';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { FavoriteRepository } from './repository/favorite.repository';
       CommentRepository,
       LikeRepository,
       FavoriteRepository,
+      NotificationRepository,
     ]),
     AuthModule,
   ],

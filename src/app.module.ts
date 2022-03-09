@@ -13,7 +13,7 @@ import { Image } from './image/entity/image.entity';
 import { Verification } from './auth/entities/verification.entity';
 import { Like } from './boards/entities/like.entity';
 import { Favorite } from './boards/entities/favorite.entity';
-import { Notification } from './auth/entities/notification.entity';
+import { Notification } from './notification/notification.entity';
 
 @Module({
   imports: [

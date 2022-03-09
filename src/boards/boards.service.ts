@@ -13,6 +13,7 @@ import { LikeRepository } from './repository/like.repository';
 import { FavoriteRepository } from './repository/favorite.repository';
 import { fromEvent } from 'rxjs';
 import { EventEmitter } from 'events';
+import { NotificationRepository } from 'src/notification/notification.repository';
 @Injectable()
 export class BoardsService {
   private readonly emitter = new EventEmitter();
@@ -25,6 +26,8 @@ export class BoardsService {
     private likeRepository: LikeRepository,
     @InjectRepository(FavoriteRepository)
     private favoriteRepository: FavoriteRepository,
+    @InjectRepository(NotificationRepository)
+    private notificationRepository: NotificationRepository,
   ) {}
 
   newBoardSubscribe(userId?: string) {
@@ -207,7 +210,27 @@ export class BoardsService {
     if (!board) {
       throw new NotFoundException('해당 게시물을 찾을 수 없습니다.');
     }
-    return this.commentRepository.createComment(board, createCommentDto, user);
+    const comment = await this.commentRepository.createComment(
+      board,
+      createCommentDto,
+      user,
+    );
+    const boardeWriter = await this.getBoardWriter(boardId);
+    await this.notificationRepository.createCommentNotification(
+      boardeWriter,
+      comment,
+    );
+    return comment;
+  }
+
+  async getBoardWriter(boardId: number) {
+    return (
+      await this.boardRepository
+        .createQueryBuilder('board')
+        .leftJoinAndSelect('board.user', 'user')
+        .where('board.id = :boardId', { boardId })
+        .getOne()
+    ).user;
   }
 
   async deleteBoardComment(
