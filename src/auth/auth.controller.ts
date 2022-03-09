@@ -95,4 +95,11 @@ export class AuthController {
       return { url: `http://localhost:3000/join?message=${message}` };
     }
   }
+
+  //Notification
+  @Get('notifications')
+  @UseGuards(AuthGuard())
+  async getAlltNotifications(@GetUser() user: User) {
+    return this.authService.getAlltNotifications(user);
+  }
 }

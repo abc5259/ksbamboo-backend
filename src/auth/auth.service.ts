@@ -13,6 +13,8 @@ import { ConfigService } from '@nestjs/config';
 import { Verification } from './entities/verification.entity';
 import { Repository } from 'typeorm';
 import { LoginInputDto } from './dto/login-user.dto';
+import { User } from './entities/user.entity';
+import { NotificationRepository } from 'src/notification/notification.repository';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +23,8 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     @InjectRepository(Verification)
     private readonly verification: Repository<Verification>,
+    @InjectRepository(NotificationRepository)
+    private readonly notificationRepository: NotificationRepository,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
@@ -243,5 +247,30 @@ export class AuthService {
         maxAge: 0,
       },
     };
+  }
+
+  //Notification
+  async getAlltNotifications(user: User) {
+    const notifications = await this.notificationRepository
+      .createQueryBuilder('notification')
+      .leftJoin('notification.user', 'user')
+      .addSelect([
+        'user.id',
+        'user.email',
+        'user.ksDepartment',
+        'user.enterYear',
+      ])
+      .leftJoinAndSelect('notification.comment', 'comment')
+      .leftJoin('comment.user', 'commentUser')
+      .addSelect([
+        'commentUser.id',
+        'commentUser.email',
+        'commentUser.ksDepartment',
+        'commentUser.enterYear',
+      ])
+      .leftJoinAndSelect('comment.board', 'commentBoard')
+      .where('user.id = :userId', { userId: user.id })
+      .getMany();
+    return notifications;
   }
 }
