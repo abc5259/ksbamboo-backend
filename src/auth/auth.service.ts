@@ -254,17 +254,11 @@ export class AuthService {
     const notifications = await this.notificationRepository
       .createQueryBuilder('notification')
       .leftJoin('notification.user', 'user')
-      .addSelect([
-        'user.id',
-        'user.email',
-        'user.ksDepartment',
-        'user.enterYear',
-      ])
+      .addSelect(['user.id'])
       .leftJoinAndSelect('notification.comment', 'comment')
       .leftJoin('comment.user', 'commentUser')
       .addSelect([
         'commentUser.id',
-        'commentUser.email',
         'commentUser.ksDepartment',
         'commentUser.enterYear',
       ])
