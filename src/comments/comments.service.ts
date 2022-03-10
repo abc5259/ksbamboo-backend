@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommentRepository } from './comment.repository';
-import { EventEmitter } from 'stream';
+import { EventEmitter } from 'events';
 import { User } from 'src/auth/entities/user.entity';
 import { fromEvent } from 'rxjs';
+
 @Injectable()
 export class CommentsService {
   private readonly emitter = new EventEmitter();
@@ -12,12 +13,14 @@ export class CommentsService {
     private commentRepository: CommentRepository,
   ) {}
 
-  notificationSubscribe(user: User) {
-    return fromEvent(this.emitter, `notification/${user.id}`);
+  notificationSubscribe(userId: string) {
+    console.log(`notification/${userId}`);
+    return fromEvent(this.emitter, 'eventName');
   }
-  newCommentNotificationEmit() {}
 
   notificationEmit(eventName: string, data) {
-    return this.emitter.emit(eventName, { data });
+    console.log(this.emitter.eventNames());
+    console.log(eventName, data);
+    this.emitter.emit('eventName', { data });
   }
 }

@@ -29,8 +29,19 @@ export class BoardsService {
     private favoriteRepository: FavoriteRepository,
     @InjectRepository(NotificationRepository)
     private notificationRepository: NotificationRepository,
-    private CommentsService: CommentsService,
+    private readonly CommentsService: CommentsService,
   ) {}
+
+  notificationSubscribe(userId: string) {
+    console.log(`notification/${userId}`);
+    return fromEvent(this.emitter, `notification/${userId}`);
+  }
+
+  notificationEmit(eventName: string, data) {
+    console.log(this.emitter.eventNames());
+    console.log(eventName, data);
+    this.emitter.emit(eventName, { data });
+  }
 
   newBoardSubscribe(userId?: string) {
     if (userId) {
@@ -223,10 +234,11 @@ export class BoardsService {
       `notification/${boardeWriter.id}`,
       '새로운 댓글',
     );
-    await this.notificationRepository.createCommentNotification(
-      boardeWriter,
-      comment,
-    );
+    this.notificationEmit(`notification/${boardeWriter.id}`, '새로운 댓글');
+    // await this.notificationRepository.createCommentNotification(
+    //   boardeWriter,
+    //   comment,
+    // );
     return comment;
   }
 

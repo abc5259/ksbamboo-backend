@@ -33,6 +33,11 @@ export class BoardsController {
     return this.boardsService.newBoardSubscribe(userId);
   }
 
+  @Sse('events/comment')
+  eventsComment(@Query() { userId }: { userId: string }) {
+    return this.boardsService.notificationSubscribe(userId);
+  }
+
   @Sse('events/:category')
   categoryEvents(
     @Param('category') category: BoardCategoryType,
