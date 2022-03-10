@@ -14,6 +14,7 @@ import { FavoriteRepository } from './repository/favorite.repository';
 import { fromEvent } from 'rxjs';
 import { EventEmitter } from 'events';
 import { NotificationRepository } from 'src/notification/notification.repository';
+import { CommentsService } from 'src/comments/comments.service';
 @Injectable()
 export class BoardsService {
   private readonly emitter = new EventEmitter();
@@ -28,6 +29,7 @@ export class BoardsService {
     private favoriteRepository: FavoriteRepository,
     @InjectRepository(NotificationRepository)
     private notificationRepository: NotificationRepository,
+    private CommentsService: CommentsService,
   ) {}
 
   newBoardSubscribe(userId?: string) {
@@ -216,6 +218,11 @@ export class BoardsService {
       user,
     );
     const boardeWriter = await this.getBoardWriter(boardId);
+    // 댓글 알림
+    this.CommentsService.notificationEmit(
+      `notification/${boardeWriter.id}`,
+      '새로운 댓글',
+    );
     await this.notificationRepository.createCommentNotification(
       boardeWriter,
       comment,

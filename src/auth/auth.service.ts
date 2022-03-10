@@ -15,9 +15,12 @@ import { Repository } from 'typeorm';
 import { LoginInputDto } from './dto/login-user.dto';
 import { User } from './entities/user.entity';
 import { NotificationRepository } from 'src/notification/notification.repository';
+import { EventEmitter } from 'stream';
+import { fromEvent } from 'rxjs';
 
 @Injectable()
 export class AuthService {
+  private readonly emitter = new EventEmitter();
   constructor(
     @InjectRepository(UserRepository)
     private readonly userRepository: UserRepository,
@@ -265,6 +268,7 @@ export class AuthService {
       .leftJoinAndSelect('comment.board', 'commentBoard')
       .where('user.id = :userId', { userId: user.id })
       .getMany();
+
     return notifications;
   }
 }

@@ -8,6 +8,7 @@ import { BoardsService } from './boards.service';
 import { LikeRepository } from './repository/like.repository';
 import { FavoriteRepository } from './repository/favorite.repository';
 import { NotificationRepository } from 'src/notification/notification.repository';
+import { CommentsService } from 'src/comments/comments.service';
 
 @Module({
   imports: [
@@ -21,6 +22,6 @@ import { NotificationRepository } from 'src/notification/notification.repository
     AuthModule,
   ],
   controllers: [BoardsController],
-  providers: [BoardsService],
+  providers: [BoardsService, CommentsService],
 })
 export class BoardsModule {}
