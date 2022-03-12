@@ -8,7 +8,7 @@ import { BoardsService } from './boards.service';
 import { LikeRepository } from './repository/like.repository';
 import { FavoriteRepository } from './repository/favorite.repository';
 import { NotificationRepository } from 'src/notification/notification.repository';
-import { CommentsService } from 'src/comments/comments.service';
+import { SseModule } from 'src/sse/sse.module';
 
 @Module({
   imports: [
@@ -20,8 +20,9 @@ import { CommentsService } from 'src/comments/comments.service';
       NotificationRepository,
     ]),
     AuthModule,
+    SseModule,
   ],
   controllers: [BoardsController],
-  providers: [BoardsService, CommentsService],
+  providers: [BoardsService],
 })
 export class BoardsModule {}

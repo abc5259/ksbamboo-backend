@@ -28,24 +28,6 @@ export class BoardsController {
   private logger = new Logger('BoardController');
   constructor(private boardsService: BoardsService) {}
 
-  @Sse('events')
-  events(@Query() { userId }: { userId?: string }) {
-    return this.boardsService.newBoardSubscribe(userId);
-  }
-
-  @Sse('events/comment')
-  eventsComment(@Query() { userId }: { userId: string }) {
-    return this.boardsService.notificationSubscribe(userId);
-  }
-
-  @Sse('events/:category')
-  categoryEvents(
-    @Param('category') category: BoardCategoryType,
-    @Query() { userId }: { userId?: string },
-  ) {
-    return this.boardsService.newCategoryBoardSubscribe(category, userId);
-  }
-
   @Get()
   getAllBoards(): Promise<Board[]> {
     return this.boardsService.getAllBoards();

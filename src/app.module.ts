@@ -14,6 +14,7 @@ import { Verification } from './auth/entities/verification.entity';
 import { Like } from './boards/entities/like.entity';
 import { Favorite } from './boards/entities/favorite.entity';
 import { Notification } from './notification/notification.entity';
+import { SseModule } from './sse/sse.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { Notification } from './notification/notification.entity';
     AuthModule,
     CommentsModule,
     ImageModule,
+    SseModule,
   ],
 })
 export class AppModule {}

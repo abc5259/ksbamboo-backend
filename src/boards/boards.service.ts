@@ -11,13 +11,9 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 import { UpdateCommentDto } from 'src/comments/dto/update-comment.dto';
 import { LikeRepository } from './repository/like.repository';
 import { FavoriteRepository } from './repository/favorite.repository';
-import { fromEvent } from 'rxjs';
-import { EventEmitter } from 'events';
-import { NotificationRepository } from 'src/notification/notification.repository';
-import { CommentsService } from 'src/comments/comments.service';
+import { SseService } from 'src/sse/sse.service';
 @Injectable()
 export class BoardsService {
-  private readonly emitter = new EventEmitter();
   constructor(
     @InjectRepository(BoardRepository)
     private boardRepository: BoardRepository,
@@ -27,72 +23,8 @@ export class BoardsService {
     private likeRepository: LikeRepository,
     @InjectRepository(FavoriteRepository)
     private favoriteRepository: FavoriteRepository,
-    @InjectRepository(NotificationRepository)
-    private notificationRepository: NotificationRepository,
-    private readonly CommentsService: CommentsService,
+    private readonly sseService: SseService,
   ) {}
-
-  notificationSubscribe(userId: string) {
-    console.log(`notification/${userId}`);
-    return fromEvent(this.emitter, `notification/${userId}`);
-  }
-
-  notificationEmit(eventName: string, data) {
-    console.log(this.emitter.eventNames());
-    console.log(eventName, data);
-    this.emitter.emit(eventName, { data });
-  }
-
-  newBoardSubscribe(userId?: string) {
-    if (userId) {
-      return fromEvent(this.emitter, `newBoard/${userId}`);
-    }
-    return fromEvent(this.emitter, `newBoard`);
-  }
-
-  newCategoryBoardSubscribe(category: BoardCategoryType, userId?: string) {
-    if (userId) {
-      return fromEvent(this.emitter, `newBoard/${category}/${userId}`);
-    }
-    return fromEvent(this.emitter, `newBoard/${category}`);
-  }
-
-  newBoardEmit(category: BoardCategoryType, userId: number) {
-    this.emitter
-      .eventNames()
-      .filter((eventName) => {
-        if (typeof eventName === 'string') {
-          return !eventName.includes(`${category}`);
-        }
-      })
-      .filter((eventName) => eventName !== `newBoard/${userId}`)
-      .map((eventName) =>
-        this.newBoardNotificationEmit(eventName as string, '새로운 게시글'),
-      );
-  }
-
-  newCategoryBoardEmit(category: BoardCategoryType, userId: number) {
-    this.emitter
-      .eventNames()
-      .filter((eventName) => {
-        if (typeof eventName === 'string') {
-          return eventName.includes(`${category}`);
-        }
-      })
-      .filter((eventName) => {
-        if (typeof eventName === 'string') {
-          return eventName !== `newBoard/${category}/${userId}`;
-        }
-      })
-      .map((eventName) =>
-        this.newBoardNotificationEmit(eventName as string, '새로운 게시글'),
-      );
-  }
-
-  async newBoardNotificationEmit(eventName: string, data) {
-    console.log(eventName);
-    return this.emitter.emit(eventName, { data });
-  }
 
   async getAllBoards(): Promise<Board[]> {
     return await this.boardRepository
@@ -180,9 +112,9 @@ export class BoardsService {
 
   createBoard(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
     if (createBoardDto.category === '전체') {
-      this.newBoardEmit(createBoardDto.category, user.id);
+      this.sseService.newBoardEmit(createBoardDto.category, user.id);
     } else {
-      this.newCategoryBoardEmit(createBoardDto.category, user.id);
+      this.sseService.newCategoryBoardEmit(createBoardDto.category, user.id);
     }
     return this.boardRepository.createBoard(createBoardDto, user);
   }
@@ -230,11 +162,14 @@ export class BoardsService {
     );
     const boardeWriter = await this.getBoardWriter(boardId);
     // 댓글 알림
-    this.CommentsService.notificationEmit(
+    // this.CommentsService.notificationEmit(
+    //   `notification/${boardeWriter.id}`,
+    //   '새로운 댓글',
+    // );
+    this.sseService.notificationEmit(
       `notification/${boardeWriter.id}`,
       '새로운 댓글',
     );
-    this.notificationEmit(`notification/${boardeWriter.id}`, '새로운 댓글');
     // await this.notificationRepository.createCommentNotification(
     //   boardeWriter,
     //   comment,
