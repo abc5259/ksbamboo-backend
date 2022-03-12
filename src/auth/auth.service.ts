@@ -267,6 +267,7 @@ export class AuthService {
       ])
       .leftJoinAndSelect('comment.board', 'commentBoard')
       .where('user.id = :userId', { userId: user.id })
+      .orderBy('notification', 'DESC')
       .getMany();
 
     return notifications;

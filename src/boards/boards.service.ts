@@ -71,6 +71,7 @@ export class BoardsService {
       .leftJoin('board.likes', 'likes')
       .addSelect(['likes.id'])
       .where('board.category = :category', { category })
+      .orderBy('board.createdAt', 'DESC')
       .getMany();
     return boards;
   }
@@ -104,6 +105,7 @@ export class BoardsService {
       .leftJoin('favorites.user', 'favoritesUser')
       .addSelect(['favoritesUser.id'])
       .where('board.id = :boardId', { boardId: id })
+      .orderBy('comments', 'ASC')
       .getOne();
     if (!board) {
       throw new NotFoundException(`해당 게시물을 찾을 수 없습니다.`);
