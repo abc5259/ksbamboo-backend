@@ -1,7 +1,4 @@
-import { Controller, Get, Query, Sse, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { User } from 'src/auth/entities/user.entity';
-import { GetUser } from 'src/auth/get-user.decorator';
+import { Controller } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 
 @Controller('comments')

@@ -12,6 +12,7 @@ import { UpdateCommentDto } from 'src/comments/dto/update-comment.dto';
 import { LikeRepository } from './repository/like.repository';
 import { FavoriteRepository } from './repository/favorite.repository';
 import { SseService } from 'src/sse/sse.service';
+
 @Injectable()
 export class BoardsService {
   constructor(

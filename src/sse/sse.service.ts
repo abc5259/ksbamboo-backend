@@ -44,15 +44,15 @@ export class SseService {
       .filter((eventName) => {
         if (typeof eventName === 'string') {
           if (
-            !eventName.includes(`${category}`) &&
-            !eventName.includes(`newBoard`)
+            (!eventName.includes(`${category}`) &&
+              !eventName.includes(`newBoard`)) ||
+            eventName === `newBoard/${userId}`
           ) {
             return false;
           }
           return true;
         }
       })
-      .filter((eventName) => eventName !== `newBoard/${userId}`)
       .map((eventName) =>
         this.newBoardNotificationEmit(eventName as string, '새로운 게시글'),
       );
@@ -64,17 +64,13 @@ export class SseService {
       .filter((eventName) => {
         if (typeof eventName === 'string') {
           if (
-            eventName.includes(`${category}`) &&
-            !eventName.includes(`newBoard`)
+            (!eventName.includes(`${category}`) &&
+              !eventName.includes(`newBoard`)) ||
+            eventName === `newBoard/${category}/${userId}`
           ) {
             return false;
           }
           return true;
-        }
-      })
-      .filter((eventName) => {
-        if (typeof eventName === 'string') {
-          return eventName !== `newBoard/${category}/${userId}`;
         }
       })
       .map((eventName) =>
