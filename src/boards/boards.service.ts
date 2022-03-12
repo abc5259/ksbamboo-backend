@@ -161,19 +161,12 @@ export class BoardsService {
       user,
     );
     const boardeWriter = await this.getBoardWriter(boardId);
-    // 댓글 알림
-    // this.CommentsService.notificationEmit(
-    //   `notification/${boardeWriter.id}`,
-    //   '새로운 댓글',
-    // );
-    this.sseService.notificationEmit(
-      `notification/${boardeWriter.id}`,
-      '새로운 댓글',
-    );
-    // await this.notificationRepository.createCommentNotification(
-    //   boardeWriter,
-    //   comment,
-    // );
+    if (user.id !== boardeWriter.id) {
+      this.sseService.notificationEmit(
+        `notification/${boardeWriter.id}`,
+        '새로운 댓글',
+      );
+    }
     return comment;
   }
 

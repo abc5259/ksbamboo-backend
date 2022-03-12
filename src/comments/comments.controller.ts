@@ -7,19 +7,4 @@ import { CommentsService } from './comments.service';
 @Controller('comments')
 export class CommentsController {
   constructor(private commentsService: CommentsService) {}
-
-  // //Notification
-  // @Get('notifications')
-  // @UseGuards(AuthGuard())
-  // async getAlltNotifications(@GetUser() user: User) {
-  //   return this.commentsService.getAlltNotifications(user);
-  // }
-
-  //Notification Alarm
-  // user 게시물의 댓글을 알림으로 줘야함
-  // 댓글 단 사람이랑 해당 게시물 작성자랑 이벤트가 서로 연결되어 있어야 함
-  @Sse('events')
-  events(@Query() { userId }: { userId: string }) {
-    return this.commentsService.notificationSubscribe(userId);
-  }
 }
