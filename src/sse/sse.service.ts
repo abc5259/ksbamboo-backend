@@ -9,13 +9,10 @@ export class SseService {
   constructor() {}
 
   notificationSubscribe(userId: string) {
-    console.log(`notification/${userId}`);
     return fromEvent(this.emitter, `notification/${userId}`);
   }
 
   notificationEmit(eventName: string, data) {
-    console.log(this.emitter.eventNames());
-    console.log(eventName, data);
     this.emitter.emit(eventName, { data });
   }
 

@@ -43,6 +43,8 @@ export class BoardsService {
       .addSelect(['comment.id'])
       .leftJoin('board.likes', 'likes')
       .addSelect(['likes.id'])
+      .skip(0)
+      .take(20)
       .orderBy('board.createdAt', 'DESC')
       .getMany();
   }
