@@ -29,8 +29,9 @@ export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
   @Get()
-  getAllBoards(): Promise<Board[]> {
-    return this.boardsService.getAllBoards();
+  getAllBoards(@Query() { page }: { page: number }) {
+    console.log(page);
+    return this.boardsService.getAllBoards(page);
   }
 
   @Get('/me')

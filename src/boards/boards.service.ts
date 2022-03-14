@@ -27,8 +27,8 @@ export class BoardsService {
     private readonly sseService: SseService,
   ) {}
 
-  async getAllBoards(): Promise<Board[]> {
-    return await this.boardRepository
+  async getAllBoards(page: number) {
+    const boards = await this.boardRepository
       .createQueryBuilder('board')
       .leftJoin('board.user', 'user')
       .addSelect([
@@ -43,10 +43,15 @@ export class BoardsService {
       .addSelect(['comment.id'])
       .leftJoin('board.likes', 'likes')
       .addSelect(['likes.id'])
-      .skip(0)
-      .take(20)
+      .skip(page)
+      .take(21)
       .orderBy('board.createdAt', 'DESC')
       .getMany();
+    return {
+      boards: boards.slice(0, 20),
+      nextId: boards[20]?.id || null,
+      previousId: page / 20,
+    };
   }
 
   async getMeBoards(user: User): Promise<Board[]> {
