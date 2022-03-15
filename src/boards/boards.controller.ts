@@ -29,9 +29,8 @@ export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
   @Get()
-  getAllBoards(@Query() { page }: { page: number }) {
-    console.log(page);
-    return this.boardsService.getAllBoards(page);
+  getAllBoards(@Query() { boardId }: { boardId?: number }) {
+    return this.boardsService.getAllBoards(boardId);
   }
 
   @Get('/me')

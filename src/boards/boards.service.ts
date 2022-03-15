@@ -27,31 +27,47 @@ export class BoardsService {
     private readonly sseService: SseService,
   ) {}
 
-  async getAllBoards(page: number) {
-    const boards = await this.boardRepository
-      .createQueryBuilder('board')
-      .leftJoin('board.user', 'user')
-      .addSelect([
-        'user.id',
-        'user.username',
-        'user.email',
-        'user.ksDepartment',
-        'user.enterYear',
-        'user.verified',
-      ])
-      .leftJoin('board.comments', 'comment')
-      .addSelect(['comment.id'])
-      .leftJoin('board.likes', 'likes')
-      .addSelect(['likes.id'])
-      .skip(page)
-      .take(21)
-      .orderBy('board.createdAt', 'DESC')
-      .getMany();
-    return {
-      boards: boards.slice(0, 20),
-      nextId: boards[20]?.id || null,
-      previousId: page / 20,
-    };
+  async getAllBoards(boardId?: number) {
+    if (!boardId) {
+      return await this.boardRepository
+        .createQueryBuilder('board')
+        .leftJoin('board.user', 'user')
+        .addSelect([
+          'user.id',
+          'user.username',
+          'user.email',
+          'user.ksDepartment',
+          'user.enterYear',
+          'user.verified',
+        ])
+        .leftJoin('board.comments', 'comment')
+        .addSelect(['comment.id'])
+        .leftJoin('board.likes', 'likes')
+        .addSelect(['likes.id'])
+        .take(15)
+        .orderBy('board.createdAt', 'DESC')
+        .getMany();
+    } else {
+      return await this.boardRepository
+        .createQueryBuilder('board')
+        .leftJoin('board.user', 'user')
+        .addSelect([
+          'user.id',
+          'user.username',
+          'user.email',
+          'user.ksDepartment',
+          'user.enterYear',
+          'user.verified',
+        ])
+        .leftJoin('board.comments', 'comment')
+        .addSelect(['comment.id'])
+        .leftJoin('board.likes', 'likes')
+        .addSelect(['likes.id'])
+        .where('board.id < :boardId', { boardId })
+        .take(15)
+        .orderBy('board.createdAt', 'DESC')
+        .getMany();
+    }
   }
 
   async getMeBoards(user: User): Promise<Board[]> {
