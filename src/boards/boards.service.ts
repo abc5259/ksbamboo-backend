@@ -44,7 +44,7 @@ export class BoardsService {
         .addSelect(['comment.id'])
         .leftJoin('board.likes', 'likes')
         .addSelect(['likes.id'])
-        .take(15)
+        .take(10)
         .orderBy('board.createdAt', 'DESC')
         .getMany();
     } else {
@@ -64,7 +64,7 @@ export class BoardsService {
         .leftJoin('board.likes', 'likes')
         .addSelect(['likes.id'])
         .where('board.id < :boardId', { boardId })
-        .take(15)
+        .take(10)
         .orderBy('board.createdAt', 'DESC')
         .getMany();
     }

@@ -41,7 +41,7 @@ export class SseService {
       .filter((eventName) => {
         if (typeof eventName === 'string') {
           if (
-            (!eventName.includes(`${category}`) &&
+            (!eventName.includes(category) &&
               !eventName.includes(`newBoard`)) ||
             eventName === `newBoard/${userId}`
           ) {
@@ -61,8 +61,7 @@ export class SseService {
       .filter((eventName) => {
         if (typeof eventName === 'string') {
           if (
-            (!eventName.includes(`${category}`) &&
-              !eventName.includes(`newBoard`)) ||
+            !eventName.includes(category) ||
             eventName === `newBoard/${category}/${userId}`
           ) {
             return false;

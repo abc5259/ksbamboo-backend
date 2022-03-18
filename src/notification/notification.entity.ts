@@ -21,4 +21,7 @@ export class Notification extends BaseEntity {
   @OneToOne((type) => Comment, { onDelete: 'CASCADE' })
   @JoinColumn()
   comment: Comment;
+
+  @Column('boolean', { default: false })
+  isView: boolean = false;
 }
