@@ -1,6 +1,7 @@
 import {
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -271,5 +272,16 @@ export class AuthService {
       .getMany();
 
     return notifications;
+  }
+
+  async updateViewNotification(notificationId: number) {
+    const notification = await this.notificationRepository.findOne(
+      notificationId,
+    );
+    if (!notification) {
+      throw new NotFoundException('해당 알림을 찾을 수 없습니다.');
+    }
+    notification.isView = true;
+    return await this.notificationRepository.save(notification);
   }
 }

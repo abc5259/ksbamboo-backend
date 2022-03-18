@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Logger,
+  Patch,
   Post,
   Query,
   Redirect,
@@ -20,6 +21,7 @@ import { User } from './entities/user.entity';
 import { LoginInputDto } from './dto/login-user.dto';
 import { JwtRefreshTokenGuard } from './guards/jwt-refresh.guard';
 import { Response } from 'express';
+import { UpdateDateColumn } from 'typeorm';
 @Controller('auth')
 export class AuthController {
   private logger = new Logger('AuthController');
@@ -101,5 +103,13 @@ export class AuthController {
   @UseGuards(AuthGuard())
   async getAlltNotifications(@GetUser() user: User) {
     return this.authService.getAlltNotifications(user);
+  }
+
+  @Patch('notification/view')
+  @UseGuards(AuthGuard())
+  async updateViewNotification(
+    @Query('notificationId') notificationId: number,
+  ) {
+    return this.authService.updateViewNotification(notificationId);
   }
 }
