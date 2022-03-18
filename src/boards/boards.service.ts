@@ -77,8 +77,32 @@ export class BoardsService {
     return boards;
   }
 
-  async getCategoryBoards(category: BoardCategoryType): Promise<Board[]> {
-    const boards = await this.boardRepository
+  async getCategoryBoards(
+    category: BoardCategoryType,
+    boardId?: number,
+  ): Promise<Board[]> {
+    if (!boardId) {
+      return await this.boardRepository
+        .createQueryBuilder('board')
+        .leftJoin('board.user', 'user')
+        .addSelect([
+          'user.id',
+          'user.username',
+          'user.email',
+          'user.ksDepartment',
+          'user.enterYear',
+          'user.verified',
+        ])
+        .leftJoin('board.comments', 'comment')
+        .addSelect(['comment.id'])
+        .leftJoin('board.likes', 'likes')
+        .addSelect(['likes.id'])
+        .where('board.category = :category', { category })
+        .take(15)
+        .orderBy('board.createdAt', 'DESC')
+        .getMany();
+    }
+    return await this.boardRepository
       .createQueryBuilder('board')
       .leftJoin('board.user', 'user')
       .addSelect([
@@ -94,9 +118,9 @@ export class BoardsService {
       .leftJoin('board.likes', 'likes')
       .addSelect(['likes.id'])
       .where('board.category = :category', { category })
+      .where('board.id < :boardId', { boardId })
       .orderBy('board.createdAt', 'DESC')
       .getMany();
-    return boards;
   }
 
   async getBoardById(id: number): Promise<Board> {

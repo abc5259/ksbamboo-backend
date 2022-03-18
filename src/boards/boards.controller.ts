@@ -29,8 +29,16 @@ export class BoardsController {
   constructor(private boardsService: BoardsService) {}
 
   @Get()
-  getAllBoards(@Query() { boardId }: { boardId?: number }) {
-    return this.boardsService.getAllBoards(boardId);
+  getAllBoards(@Query() { nextBoardId }: { nextBoardId?: number }) {
+    return this.boardsService.getAllBoards(nextBoardId);
+  }
+
+  @Get('/category/:category')
+  getCategoryBoards(
+    @Param('category') category: BoardCategoryType,
+    @Query() { nextBoardId }: { nextBoardId?: number },
+  ): Promise<Board[]> {
+    return this.boardsService.getCategoryBoards(category, nextBoardId);
   }
 
   @Get('/me')
@@ -38,13 +46,6 @@ export class BoardsController {
   getLoginUserBoards(@GetUser() user: User) {
     console.log(user);
     return this.boardsService.getLoginUserBoards(user);
-  }
-
-  @Get('/category/:category')
-  getCategoryBoards(
-    @Param('category') category: BoardCategoryType,
-  ): Promise<Board[]> {
-    return this.boardsService.getCategoryBoards(category);
   }
 
   @Get('/:id')
