@@ -98,7 +98,7 @@ export class BoardsService {
         .leftJoin('board.likes', 'likes')
         .addSelect(['likes.id'])
         .where('board.category = :category', { category })
-        .take(15)
+        .take(10)
         .orderBy('board.createdAt', 'DESC')
         .getMany();
     }
@@ -118,7 +118,8 @@ export class BoardsService {
       .leftJoin('board.likes', 'likes')
       .addSelect(['likes.id'])
       .where('board.category = :category', { category })
-      .where('board.id < :boardId', { boardId })
+      .andWhere('board.id < :boardId', { boardId })
+      .take(10)
       .orderBy('board.createdAt', 'DESC')
       .getMany();
   }
