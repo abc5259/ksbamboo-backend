@@ -3,13 +3,10 @@ import {
   Controller,
   Get,
   Logger,
-  Patch,
   Post,
   Query,
   Redirect,
-  Request,
   Res,
-  Sse,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
@@ -96,20 +93,5 @@ export class AuthController {
     } else {
       return { url: `http://localhost:3000/join?message=${message}` };
     }
-  }
-
-  //Notification
-  @Get('notifications')
-  @UseGuards(AuthGuard())
-  async getAlltNotifications(@GetUser() user: User) {
-    return this.authService.getAlltNotifications(user);
-  }
-
-  @Patch('notification/view')
-  @UseGuards(AuthGuard())
-  async updateViewNotification(
-    @Query('notificationId') notificationId: number,
-  ) {
-    return this.authService.updateViewNotification(notificationId);
   }
 }

@@ -15,6 +15,7 @@ import { Like } from './boards/entities/like.entity';
 import { Favorite } from './boards/entities/favorite.entity';
 import { Notification } from './notification/notification.entity';
 import { SseModule } from './sse/sse.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { SseModule } from './sse/sse.module';
     CommentsModule,
     ImageModule,
     SseModule,
+    UserModule,
   ],
 })
 export class AppModule {}

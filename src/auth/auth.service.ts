@@ -1,7 +1,6 @@
 import {
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,10 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { Verification } from './entities/verification.entity';
 import { Repository } from 'typeorm';
 import { LoginInputDto } from './dto/login-user.dto';
-import { User } from './entities/user.entity';
-import { NotificationRepository } from 'src/notification/notification.repository';
 import { EventEmitter } from 'stream';
-import { fromEvent } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -27,8 +23,6 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     @InjectRepository(Verification)
     private readonly verification: Repository<Verification>,
-    @InjectRepository(NotificationRepository)
-    private readonly notificationRepository: NotificationRepository,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
@@ -251,37 +245,5 @@ export class AuthService {
         maxAge: 0,
       },
     };
-  }
-
-  //Notification
-  async getAlltNotifications(user: User) {
-    const notifications = await this.notificationRepository
-      .createQueryBuilder('notification')
-      .leftJoin('notification.user', 'user')
-      .addSelect(['user.id'])
-      .leftJoinAndSelect('notification.comment', 'comment')
-      .leftJoin('comment.user', 'commentUser')
-      .addSelect([
-        'commentUser.id',
-        'commentUser.ksDepartment',
-        'commentUser.enterYear',
-      ])
-      .leftJoinAndSelect('comment.board', 'commentBoard')
-      .where('user.id = :userId', { userId: user.id })
-      .orderBy('notification', 'DESC')
-      .getMany();
-
-    return notifications;
-  }
-
-  async updateViewNotification(notificationId: number) {
-    const notification = await this.notificationRepository.findOne(
-      notificationId,
-    );
-    if (!notification) {
-      throw new NotFoundException('해당 알림을 찾을 수 없습니다.');
-    }
-    notification.isView = true;
-    return await this.notificationRepository.save(notification);
   }
 }

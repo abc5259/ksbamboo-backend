@@ -27,11 +27,7 @@ import { NotificationRepository } from '../notification/notification.repository'
         }, //expiresIn: 10
       }),
     }),
-    TypeOrmModule.forFeature([
-      UserRepository,
-      Verification,
-      NotificationRepository,
-    ]),
+    TypeOrmModule.forFeature([UserRepository, Verification]),
     MailerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
