@@ -33,6 +33,11 @@ export class BoardsController {
     return this.boardsService.getAllBoards(nextBoardId);
   }
 
+  @Get('like')
+  getLikeAllBoards(@Query() { nextBoardId }: { nextBoardId?: number }) {
+    return this.boardsService.getLikeAllBoards(nextBoardId);
+  }
+
   @Get('/category/:category')
   getCategoryBoards(
     @Param('category') category: BoardCategoryType,

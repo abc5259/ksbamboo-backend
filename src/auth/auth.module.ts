@@ -11,7 +11,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { Verification } from './entities/verification.entity';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
-import { NotificationRepository } from '../notification/notification.repository';
 
 @Module({
   imports: [

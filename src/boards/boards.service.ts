@@ -12,6 +12,7 @@ import { UpdateCommentDto } from 'src/comments/dto/update-comment.dto';
 import { LikeRepository } from './repository/like.repository';
 import { FavoriteRepository } from './repository/favorite.repository';
 import { SseService } from 'src/sse/sse.service';
+import { Like } from './entities/like.entity';
 
 @Injectable()
 export class BoardsService {
@@ -159,6 +160,52 @@ export class BoardsService {
       throw new NotFoundException(`해당 게시물을 찾을 수 없습니다.`);
     }
     return board;
+  }
+
+  async getLikeAllBoards(boardId?: number) {
+    if (!boardId) {
+      return await this.boardRepository
+        .createQueryBuilder('board')
+        .leftJoin('board.user', 'user')
+        .addSelect([
+          'user.id',
+          'user.username',
+          'user.email',
+          'user.ksDepartment',
+          'user.enterYear',
+          'user.verified',
+        ])
+        .leftJoin('board.comments', 'comment')
+        .addSelect(['comment.id'])
+        .leftJoin('board.likes', 'likes')
+        .addSelect(['likes.id'])
+        .loadRelationCountAndMap('board.likesCount', 'board.likes')
+        // .orderBy('board.likesCount', 'DESC')
+        .take(10)
+        .getMany();
+    } else {
+      return await this.boardRepository
+        .createQueryBuilder('board')
+        .leftJoin('board.user', 'user')
+        .addSelect([
+          'user.id',
+          'user.username',
+          'user.email',
+          'user.ksDepartment',
+          'user.enterYear',
+          'user.verified',
+        ])
+        .leftJoin('board.comments', 'comment')
+        .addSelect(['comment.id'])
+        .leftJoin('board.likes', 'likes')
+        .addSelect(['likes.id'])
+        .where('board.id < :boardId', { boardId })
+        .take(10)
+        .loadRelationCountAndMap('likes', 'likeCount')
+        .from(Like, 'likeCount')
+        .orderBy('likeCount', 'DESC')
+        .getMany();
+    }
   }
 
   createBoard(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
